@@ -1,0 +1,63 @@
+{
+ "seed": 135,
+ "top_spacing": 8.2,
+ "bot_spacing": 5.2,
+ "top_inscribed": {
+  "n": 10,
+  "min": 5.44,
+  "median": 6.03,
+  "max": 7.01
+ },
+ "top_equiv": {
+  "n": 10,
+  "min": 6.4,
+  "median": 7.12,
+  "max": 8.0
+ },
+ "bot_inscribed": {
+  "n": 19,
+  "min": 3.34,
+  "median": 3.95,
+  "max": 4.4
+ },
+ "bot_equiv": {
+  "n": 19,
+  "min": 3.7,
+  "median": 4.73,
+  "max": 5.63
+ },
+ "top_rib": {
+  "min": 2.15,
+  "p10": 2.16,
+  "median": 2.29,
+  "n": 17
+ },
+ "bot_rib": {
+  "min": 1.98,
+  "p10": 2.04,
+  "median": 2.18,
+  "n": 40
+ },
+ "struts": 15,
+ "strut_max_tilt": 27.8,
+ "strut_tilts": [
+  3.1,
+  8.2,
+  8.7,
+  9.6,
+  15.1,
+  15.2,
+  16.4,
+  17.9,
+  21.9,
+  22.9,
+  23.4,
+  26.3,
+  27.0,
+  27.4,
+  27.8
+ ],
+ "open_top_mm2": 400,
+ "open_bot_mm2": 325,
+ "see_through_mm2": 204
+}

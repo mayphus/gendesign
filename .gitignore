@@ -1,0 +1,8 @@
+out/
+stl/
+*.stl
+*.3mf
+*.gcode
+.venv/
+__pycache__/
+.DS_Store
