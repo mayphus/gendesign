@@ -7,6 +7,8 @@ description: >-
 
 # Basin hair catcher
 
+Worked example in gendesign. Loop, print rule, and iteration record: [SKILL.md](../../SKILL.md).
+
 Press-fit waste insert. Two jobs, two architectures: Voronoi A/B/C catch
 hair; default **smooth v2** lets hair through and blocks an 8.6 mm ball
 (search cap was 12 mm). Do not score a catcher on the toy-ball limit, or

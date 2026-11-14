@@ -1,5 +1,7 @@
 # Example: 2-D SIMP cantilever
 
+Runnable demo of the `gendesign` package (`gendesign topopt2d` is the same solver).
+
 ```bash
 python examples/topopt_bracket/run.py --quick
 ```

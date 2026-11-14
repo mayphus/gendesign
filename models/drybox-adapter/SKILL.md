@@ -7,6 +7,8 @@ description: >-
 
 # Drybox adapter
 
+Worked example in gendesign. Loop, print rule, and iteration record: [SKILL.md](../../SKILL.md).
+
 Revolved grommet: flared mouth, PTFE pocket, 45° cone floor (no flat ledge
 over the bore), filament through-hole, barbed stem. Default **v9, P = 8.85 mm**.
 

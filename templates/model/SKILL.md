@@ -6,6 +6,8 @@ description: >-
 
 # (Model name)
 
+Worked example in gendesign. Loop, print rule, and iteration record: [SKILL.md](../../SKILL.md).
+
 What the part does, in two or three lines. Name the default saved design.
 
 ## Measure

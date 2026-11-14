@@ -118,7 +118,7 @@ def _run_voronoi(req, out: Path, variant: str):
             "Voronoi variants A (organic small cells), B (larger drainage cells) "
             "and C (rounded pebble cells + branching struts) are in methods/voronoi_*.py. "
             "Saved winners and measured stats are under designs/voronoi-*/. "
-            "The public repo's version C lives in models/hair-catcher/legacy-C/ "
+            "Version C lives in models/hair-catcher/legacy-C/ "
             "(build.py, design.py, search.py, render.py). Run those scripts from that folder. "
             "Rebuilds of the saved A/B/C plans need the 2-D plans in those design folders."
         ),
