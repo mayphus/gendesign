@@ -1,0 +1,21 @@
+{
+  "gen": "10",
+  "kind": "generation_best",
+  "feasible": "1",
+  "score": "0.5628",
+  "open_area_pct": "51.12",
+  "max_sphere_mm": "8.603",
+  "min_inscribed_mm": "8.512",
+  "min_strut_mm": "1.8",
+  "n_open": "7",
+  "aspect_p95": "1.0",
+  "insert_depth_mm": "10.21",
+  "dish_h_mm": "9.2",
+  "proud_h_mm": "0.0",
+  "thick_mm": "3.0",
+  "arch": "bowl",
+  "family": "holes",
+  "overhang_deg": "49.0",
+  "defl_mm": "0.016",
+  "reasons": ""
+}

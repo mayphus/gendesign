@@ -1,0 +1,58 @@
+{
+  "name": "voronoi-a",
+  "method": "voronoi",
+  "variant": "A",
+  "stats": {
+    "variant": "A",
+    "top": {
+      "cells": 25,
+      "openings": 23,
+      "open_dia_min": 2.7247018185482244,
+      "open_dia_median": 3.7215050718761624,
+      "open_dia_max": 5.277575200790606,
+      "strut_w_p10": 1.12,
+      "strut_w_median": 1.8727519857151402,
+      "open_area_frac": 0.5033969769291965
+    },
+    "fine": {
+      "cells": 79,
+      "openings": 76,
+      "open_dia_min": 1.0733126291998991,
+      "open_dia_median": 1.7232527382830412,
+      "open_dia_max": 2.4370473938764508,
+      "strut_w_p10": 0.8,
+      "strut_w_median": 1.164817582284883,
+      "open_area_frac": 0.41154335719968177
+    },
+    "branches": 155,
+    "fragments_dropped": 841,
+    "fragment_vol_max": 0.0,
+    "watertight": true,
+    "volume_mm3": 4815.84239281496,
+    "bounds_use": [
+      [
+        -23.000164797646605,
+        -22.99921896735958,
+        -7.224852858340681
+      ],
+      [
+        23.000044283171324,
+        22.999722370780578,
+        1.6
+      ]
+    ],
+    "collar_cad_od": 35.2053,
+    "collar_target_print_od": 35.1,
+    "shrink": 0.003,
+    "collar_id": 32.0053,
+    "collar_depth": 7.0,
+    "flange_od": 46.0,
+    "flange_t": 1.6,
+    "overall_h": 8.6,
+    "max_branch_angle": 38.0
+  },
+  "notes": "Organic two-level Voronoi with small cells. Fine-level openings went down to ~1.1 mm and some struts under 1.2 mm \u2014 hair-catching was strong but drainage and printability suffered.",
+  "sources": [
+    "methods/voronoi_A.py"
+  ]
+}

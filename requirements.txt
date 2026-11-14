@@ -1,7 +1,21 @@
-numpy
-scipy
-scikit-image
-trimesh
-fast-simplification
-pyvista
-pillow
+# Core CAD (needed to generate the hair catcher and the drybox adapter)
+cadquery==2.8.0
+# cadquery-ocp is pulled in by cadquery
+
+# Numerics / meshing / search
+numpy>=1.26
+scipy>=1.11
+scikit-image>=0.22
+trimesh>=4.0
+shapely>=2.0
+mapbox-earcut>=1.0   # triangulates the 2-D topopt extrusion
+matplotlib>=3.8
+pillow>=10.0
+pyyaml>=6.0
+
+# Version C mesher and previews (models/hair-catcher/legacy-C/)
+fast-simplification>=0.1
+pyvista>=0.43
+
+# Optional Bayesian search
+# optuna>=3.0

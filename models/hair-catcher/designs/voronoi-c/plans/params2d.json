@@ -1,0 +1,26 @@
+{
+ "SEED": 7,
+ "D_TOP": [
+  6.4,
+  7.2
+ ],
+ "W_TOP": [
+  2.2,
+  2.0
+ ],
+ "D_FINE": [
+  4.7,
+  5.2
+ ],
+ "W_FINE": [
+  2.1,
+  2.0
+ ],
+ "WMIN": 2.05,
+ "WARP_AMP": 0.8,
+ "WARP_LEN": 6.0,
+ "FILLET": 0.6,
+ "ROUND_K": 0.75,
+ "TOP_FLOOR": 4.7,
+ "FINE_FLOOR": 3.5
+}

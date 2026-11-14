@@ -1,0 +1,37 @@
+{
+  "name": "smooth-v2",
+  "method": "smooth",
+  "title": "Smooth 7-hole bowl guard",
+  "prefix": "basin_guard_smooth",
+  "params": {
+    "shrink": 0.003,
+    "collar_od_print": 35.1,
+    "collar_wall": 1.6,
+    "flange_diameter": 46.0,
+    "flange_thickness": 1.6,
+    "lead_in": 0.7,
+    "insert_depth": 10.21,
+    "dish_depth": 9.2,
+    "thickness": 3.0,
+    "hole_diameter": 8.6,
+    "strut_width": 1.8,
+    "hole_rotation_deg": 30.0,
+    "fillet_hole_lip": 0.6,
+    "fillet_flange_top_outer": 0.6,
+    "fillet_bowl_to_flange": 0.8,
+    "fillet_bowl_to_collar": 0.8,
+    "stl_linear": 0.02,
+    "stl_angular": 0.03
+  },
+  "stats": {
+    "max_sphere_mm": 8.6,
+    "min_strut_mm": 1.8,
+    "open_area_pct": 50.54,
+    "volume_mm3": 4304.4,
+    "insert_depth_mm": 10.21,
+    "dish_h_mm": 9.2,
+    "thick_mm": 3.0,
+    "slice_standin": "17m 17s, 5.36 g, 1.797 m, 59 layers"
+  },
+  "notes": "Winner of the v2 evolutionary search, rebuilt as exact CadQuery with fillets. Flange seat is flat (bed face). Collar lead-in is a 45\u00b0 chamfer, not a fillet."
+}

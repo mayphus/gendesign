@@ -1,0 +1,163 @@
+{
+  "name": "voronoi-c",
+  "method": "voronoi",
+  "variant": "C",
+  "stats": {
+    "variant": "C",
+    "watertight": true,
+    "winding_consistent": true,
+    "euler": -80,
+    "bodies": 1,
+    "volume_mm3": 4635.678854798088,
+    "bounds_use": [
+      [
+        -23.001,
+        -23.0,
+        -7.078
+      ],
+      [
+        23.0,
+        23.001,
+        1.6
+      ]
+    ],
+    "extents": [
+      46.001,
+      46.001,
+      8.678
+    ],
+    "faces": 341684,
+    "level1": {
+      "z_range": [
+        -0.8,
+        1.6
+      ],
+      "openings": 11,
+      "open_dia_mid": {
+        "min": 4.8166378315169185,
+        "median": 5.6816898894607055,
+        "max": 6.721904492032002
+      },
+      "open_dia_min_any_z": 4.7335399015958455,
+      "z_of_min": -0.3,
+      "open_dia_list_mid": [
+        4.82,
+        5.08,
+        5.28,
+        5.41,
+        5.67,
+        5.68,
+        6.08,
+        6.12,
+        6.21,
+        6.71,
+        6.72
+      ],
+      "strut_mid": {
+        "min": 1.6951696080333674,
+        "p5": 1.84,
+        "median": 2.307552816296953,
+        "thinner_than_1.6_mm2": 0.384,
+        "thinner_than_1.8_mm2": 0.40160000000000007,
+        "thinner_than_2.0_mm2": 16.3136
+      },
+      "open_area_frac": 0.505440101203784
+    },
+    "level2": {
+      "z_range": [
+        -7.0,
+        -5.0
+      ],
+      "openings": 17,
+      "open_dia_mid": {
+        "min": 3.585749572962395,
+        "median": 4.157691667259611,
+        "max": 5.6142675390472805
+      },
+      "open_dia_min_any_z": 3.5145412218382077,
+      "z_of_min": -5.433333333333334,
+      "open_dia_list_mid": [
+        3.59,
+        3.74,
+        3.75,
+        3.79,
+        3.83,
+        3.85,
+        3.88,
+        3.92,
+        4.16,
+        4.33,
+        4.39,
+        4.56,
+        4.62,
+        4.64,
+        4.93,
+        5.3,
+        5.61
+      ],
+      "strut_mid": {
+        "min": 1.670449041425688,
+        "p5": 1.8048822676285565,
+        "median": 2.130164312911096,
+        "thinner_than_1.6_mm2": 0.376,
+        "thinner_than_1.8_mm2": 0.3824,
+        "thinner_than_2.0_mm2": 26.1968
+      },
+      "open_area_frac": 0.44839760675328394
+    },
+    "straight_through_area_frac": 0.25528296482532004,
+    "branch_sections": [
+      {
+        "z": -1.7000000000000002,
+        "blobs": 14,
+        "min_dia": 2.307552816296953,
+        "median_dia": 2.334436928289879
+      },
+      {
+        "z": -2.08,
+        "blobs": 14,
+        "min_dia": 2.2908513701242166,
+        "median_dia": 2.3227553482998906
+      },
+      {
+        "z": -2.46,
+        "blobs": 14,
+        "min_dia": 2.2908513701242166,
+        "median_dia": 2.305470812059514
+      },
+      {
+        "z": -2.8400000000000003,
+        "blobs": 14,
+        "min_dia": 2.274027264568303,
+        "median_dia": 2.2922478051031043
+      },
+      {
+        "z": -3.22,
+        "blobs": 14,
+        "min_dia": 2.2542404485768595,
+        "median_dia": 2.274027264568303
+      },
+      {
+        "z": -3.6,
+        "blobs": 14,
+        "min_dia": 2.241428116179504,
+        "median_dia": 2.262741699796952
+      }
+    ],
+    "link_zone_overhang": {
+      "area_mm2": 205.92087764355912,
+      "frac_by_angle_from_vertical": {
+        "<= 20": 0.5234603196307777,
+        "<= 25": 0.5571280078392692,
+        "<= 30": 0.7588887716101881,
+        "<= 40": 0.9781742822105773,
+        "<= 45": 0.982888347928251
+      },
+      "p95_angle": 31.610226655012237
+    }
+  },
+  "notes": "Rounded pebble cells, branching struts, smoother look than B. Still a two-level hair catcher (fine level ~3.5\u20135.6 mm), not a toy guard. The public repo shipped this as version C.",
+  "sources": [
+    "methods/voronoi_C*.py"
+  ]
+}
