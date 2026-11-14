@@ -2,7 +2,9 @@
 
 A generative hair catcher for a washbasin drain. Big rounded pebble cells sit flush with the basin. Below them, the struts branch down into a finer layer of cells that catches hair. It's designed to print without supports on a Bambu A1 mini in PLA.
 
-![Version C: top, angled, underside and cut-away views](images/version-C.png)
+This is the original public version C. The scripts below run from this folder (`models/hair-catcher/legacy-C/`). Dependencies are the repo-root `requirements.txt`.
+
+![Version C: top, angled, underside and cut-away views](version-C.png)
 
 ## How it's generated
 
@@ -38,12 +40,12 @@ Openings are measured as the largest circle that fits through each hole. Equival
 - **Orientation:** `*_print.stl` is already flipped. The flush top and flange go on the bed, with the collar pointing up.
 - **Estimate:** about 14 min plus printer startup, 4.8 g, 43 layers. This came from OrcaSlicer 2.5 with approximate A1 mini settings, so re-slice in Bambu Studio for an exact time.
 
-STL files are attached to the [releases](../../releases). Version C hasn't been test-printed yet.
+STL files are attached to the [releases](../../../../../releases). Version C hasn't been test-printed yet.
 
 ## Run it
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
+python -m venv .venv && .venv/bin/pip install -r ../../../requirements.txt
 .venv/bin/python search.py 100 150 8.2 5.2     # rank seeds against the targets
 .venv/bin/python build.py 135 8.2 5.2 out/C 0.08   # build version C (≈ 1 min)
 .venv/bin/python render.py out/C               # preview images
@@ -53,4 +55,4 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 ## License
 
-The code is released under the [MIT License](LICENSE). The generated models and images are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+The code is released under the [MIT License](../../../LICENSE). The generated models and images are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
