@@ -1,0 +1,17 @@
+{
+  "score": 0.5053,
+  "open_area_pct": 47.75,
+  "max_sphere_mm": 8.321,
+  "min_inscribed_mm": 8.216,
+  "min_strut_mm": 2.201,
+  "n_open": 7,
+  "insert_depth_mm": 8.51,
+  "dish_h_mm": 3.5,
+  "proud_h_mm": 0.25,
+  "thick_mm": 2.65,
+  "arch": "top_grate",
+  "family": "holes",
+  "overhang_deg": 23.63,
+  "defl_mm": 0.036,
+  "feasible": 1
+}

@@ -1,56 +1,68 @@
-# Voronoi hair catcher
+# Models
 
-A generative hair catcher for a washbasin drain. Big rounded pebble cells sit flush with the basin. Below them, the struts branch down into a finer layer of cells that catches hair. It's designed to print without supports on a Bambu A1 mini in PLA.
+Generative designs for 3D-printed parts. The goal is a working physical
+object. A saved design JSON rebuilds the geometry; it does not finish the job.
 
-![Version C: top, angled, underside and cut-away views](images/version-C.png)
+**Loop:** requirements → analysis (loads, flow, or fit) → generate/optimize
+→ printability and slice → print, only on the owner's go → physical test →
+measure and photograph → feed that back into the next design.
 
-## How it's generated
+Read [SKILL.md](SKILL.md) for the loop and the iteration record. Read
+`models/<name>/SKILL.md` for one part. **Nothing in this repo starts a print
+on its own.**
 
-1. **Two cell layers.** Seed points for the top (spacing ≈ 8.2 mm) and the bottom (≈ 5.2 mm) are relaxed with Lloyd's algorithm. They're also mirrored across the bore wall, so the outer cells end at the wall instead of being cut off.
-2. **Pebble openings.** Each Voronoi cell is inset by half a rib width. It's then morphologically opened with a disc, which gives every corner a radius of at least 2.3 mm (top) or 1.35 mm (bottom). The rims are rounded again in 3D with a smooth max. This avoids the faceted look of a plain Voronoi pattern.
-3. **Branching struts.** Every junction in the bottom pattern is claimed by the nearest top junction it can reach within 30° of vertical. A top junction with several children grows a trunk that forks lower down, so the big cells grow into the small ones. Struts end exactly on rib junctions, so they don't block the openings.
-4. **Signed distance field.** Ribs, struts, flange and collar are blended with smooth unions, which gives soft junctions and gusset-like flares. The outer envelope (flange and collar OD with its lead-in) is applied last, unblended, so the fit dimensions stay exact.
-5. The field is meshed with marching cubes on a 0.08 mm grid, then cleaned and decimated. The print file is flipped so the flush top sits on the bed.
+## Models
 
-## Version C
-
-| | Target | Measured |
+| | | |
 |---|---|---|
-| Top openings (inscribed Ø) | 5–8 mm, none < 4.5 | 10 openings, 5.4–7.0 mm, median 6.0 |
-| Bottom openings (inscribed Ø) | 3.5–5.5 mm, none < 3.2 | 19 openings, 3.3–4.4 mm, median 3.95 |
-| Ribs | ≥ 1.8 mm | min 1.98, typically 2.2–2.3 mm |
-| Struts | 8–16, near vertical | 15 struts, Ø2.3 mm, max 28° from vertical |
-| Mesh | watertight, one body | yes, 400k faces |
+| [Hair catcher / basin guard](models/hair-catcher/) | [![smooth v2](models/hair-catcher/docs/preview-34.png)](models/hair-catcher/) | Default **smooth v2**: a 7-hole bowl that lets hair through and blocks an 8.6 mm ball. Voronoi A was printed and drained poorly; B is the drainage revision. C and v2 have no recorded bench test. |
+| [Drybox adapter](models/drybox-adapter/) | [![v9 section](models/drybox-adapter/docs/v9_section_compare.png)](models/drybox-adapter/) | v9 pocket for a PTFE insert (default P = 8.85 mm). Printed holes come out ~0.1–0.2 mm undersized — measure and test-fit. |
 
-Openings are measured as the largest circle that fits through each hole. Equivalent-area diameters run about 1 mm larger. Full numbers are in [versions/C](versions/C).
+Physical notes: [`models/hair-catcher/designs/voronoi-a/test.md`](models/hair-catcher/designs/voronoi-a/test.md),
+[`models/drybox-adapter/designs/v9-8.85/test.md`](models/drybox-adapter/designs/v9-8.85/test.md).
 
-### Fit
+The original two-level Voronoi **version C** that used to sit at the repo
+root lives in [`models/hair-catcher/legacy-C/`](models/hair-catcher/legacy-C/)
+(scripts, metrics, and preview). It has not been test-printed. Run
+`search.py`, `build.py`, and `render.py` from that folder.
 
-| Feature | Size |
-|---|---|
-| Flange | Ø46.0 × 1.6 mm, flush with the basin |
-| Collar | OD 35.21 mm CAD (≈ 35.10 after 0.3% PLA shrink), ID 32.0 mm, wall 1.6 mm, depth 7.0 mm, 0.7 mm 45° lead-in |
-| Overall | 46 × 46 × 8.6 mm |
-
-### Printing
-
-- **Profile:** PLA, 0.20 mm layers, no supports, no brim.
-- **Orientation:** `*_print.stl` is already flipped. The flush top and flange go on the bed, with the collar pointing up.
-- **Estimate:** about 14 min plus printer startup, 4.8 g, 43 layers. This came from OrcaSlicer 2.5 with approximate A1 mini settings, so re-slice in Bambu Studio for an exact time.
-
-STL files are attached to the [releases](../../releases). Version C hasn't been test-printed yet.
-
-## Run it
+## Setup and commands
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python search.py 100 150 8.2 5.2     # rank seeds against the targets
-.venv/bin/python build.py 135 8.2 5.2 out/C 0.08   # build version C (≈ 1 min)
-.venv/bin/python render.py out/C               # preview images
+python models/hair-catcher/generate.py          # smooth v2 STL + STEP + stats
+python models/drybox-adapter/generate.py        # v9, P=8.85
+python generate_all.py                          # both defaults into out/
+python models/hair-catcher/optimize.py --method smooth --quick
+python models/drybox-adapter/optimize.py --quick
+python -m gendesign topopt2d --quick --out out/topopt2d
+python examples/gyroid_shell/run.py
 ```
 
-`build.py` writes `installed.stl`, `print.stl`, `metrics.json` and `mesh.json`. Change the seed for a new pattern with the same constraints. Rib widths, corner radii and strut size are constants at the top of `build.py`, and the fit dimensions are in `design.py`.
+CadQuery / OCP generates the basin guard and the adapter. The `gendesign`
+examples run on numpy, scipy, scikit-image, trimesh, and matplotlib alone.
+Slice estimates here are stand-ins unless the note says Bambu Studio or
+OrcaSlicer. Re-slice for a real time.
 
-## License
+## Design rules
 
-The code is released under the [MIT License](LICENSE). The generated models and images are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- Function first, but looks matter.
+- No flat internal floors or ledges over air — use 45° cones or chamfers.
+- Flat face on the bed; no supports unless the model says so.
+- 100% infill on small parts.
+- Never start a print without the owner's go.
+- After a print, write `test.md`: printed?, settings, measured dims vs
+  designed, fit/function, photos, failure notes, next change.
+
+## Layout
+
+```
+SKILL.md                        loop, rules, iteration record
+gendesign/                      SIMP, lattices, search, evaluation, iteration logs
+examples/                       runnable topopt bracket + gyroid
+models/<name>/                  SKILL.md, requirements, optimize, generate, designs/, docs/
+models/hair-catcher/legacy-C/   original public version C (scripts, metrics, preview)
+templates/model/                starter for a new part
+```
+
+Code is MIT (see [LICENSE](LICENSE)).

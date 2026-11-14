@@ -1,0 +1,56 @@
+{
+  "name": "deep-v3",
+  "method": "deep",
+  "title": "Deep side-slot basket (v3)",
+  "params": {
+    "Lc": 5.0,
+    "t": 1.6,
+    "Ro": 14.0,
+    "alpha": 2.324551110257609,
+    "beta": 40.0,
+    "h_slack": 0.0,
+    "d_f": 8.6,
+    "rho1": 0.09639836824963562,
+    "rho2": 0.10694843686459872,
+    "rot1": 0.0,
+    "rot2": 0.0886779716369056,
+    "a": 4.3,
+    "b": 7.412936533566903,
+    "gam": 45.0,
+    "rc": 0.6,
+    "nrows": 1,
+    "dN": 0,
+    "v_slack": 0.31660316275203226,
+    "center": true,
+    "ring2": true,
+    "N": 7,
+    "v": 12.571868777342294,
+    "stagger": true,
+    "Hs": 19.61713007670243
+  },
+  "stats": {
+    "open_area_pct": 85.82,
+    "open_mm2": 690.4,
+    "max_ball_mm": 8.6,
+    "min_strut_mm": 1.881,
+    "depth_mm_mesh": 34.30414581298828,
+    "volume_mm3": 5113.5,
+    "slice_standin": {
+      "filament_mm": "2098.43",
+      "filament_g": "6.26",
+      "filament_cm3": "5.05",
+      "time": "26m 2s",
+      "layers": 179,
+      "support_lines": 0,
+      "exit": 0
+    },
+    "overhang_print": {
+      ">45deg_mm2": 532.7,
+      ">50deg_mm2": 60.8,
+      ">60deg_mm2": 25.3,
+      ">70deg_mm2": 2.1,
+      ">80deg_mm2": 0.8
+    }
+  },
+  "notes": "Much more open area than the v2 bowl because most of the opening is in the side wall. It assumes the drain stays clear and roughly straight for ~35 mm, which was not measured. The press-fit band is shorter, the basket is harder to clean, and the look was judged poor. Functionally it only beats v2 when that extra depth is actually available (below ~27 mm). Keep as an experimental method, not the default."
+}

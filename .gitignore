@@ -1,8 +1,16 @@
 out/
 stl/
-*.stl
-*.3mf
-*.gcode
 .venv/
 __pycache__/
+*.pyc
 .DS_Store
+*.stl
+*.step
+*.stp
+*.3mf
+*.gcode
+*.gcode.3mf
+# keep documentation images; ignore generated dumps
+*.npy
+*.npz
+*.log

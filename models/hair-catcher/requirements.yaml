@@ -1,0 +1,36 @@
+name: hair-catcher
+units: mm
+purpose: >
+  A washbasin drain insert. Early variants catch hair on a two-level grate.
+  The default smooth v2 guard lets hair and water through and only has to
+  stop toys / objects larger than the ball limit.
+
+fit:
+  drain_id_measured_mm: 35.0          # open hole; measure yours
+  collar_od_print_mm: 35.10           # as-printed press-fit target
+  shrink: 0.003                       # 0.3% PLA shrinkage allowance
+  collar_wall_mm: 1.6
+  flange_diameter_mm: 46.0            # seat was assumed, not measured
+  flange_thickness_mm: 1.6
+  lead_in_mm: 0.7                     # 45° chamfer
+
+constraints:
+  max_ball_mm: 12.0                   # hard cap used in the v2 search
+  target_throat_mm: 8.6               # smooth-v2 winner throat
+  min_strut_mm: 1.80
+  min_rim_mm: 1.20
+  min_insert_mm: 4.0
+  max_insert_mm: 18.0                 # v2 bowl; deep v3 explored up to 35
+  max_proud_mm: 2.5
+  max_overhang_deg: 50.0              # flange on the bed, no supports
+  min_thickness_mm: 2.0
+  max_thickness_mm: 3.0
+
+objectives:
+  - maximize open area of the grate disc
+  - keep every opening at or under the ball limit
+  - keep struts at or above the printable minimum
+  - print with the flange on the bed and no supports
+  - no flat internal floors or ledges over air; use 45° cones or chamfers
+
+preferred_method: smooth

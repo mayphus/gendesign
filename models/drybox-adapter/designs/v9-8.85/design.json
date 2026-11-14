@@ -1,0 +1,16 @@
+{
+  "name": "v9-8.85",
+  "method": "parameter-sweep",
+  "params": {
+    "pocket": 8.85,
+    "seat_extra": 2.3,
+    "wall": 2.3,
+    "stem": 4.7,
+    "top": 10.6
+  },
+  "stats": {
+    "pocket_mm": 8.85,
+    "volume_mm3": 1652.5
+  },
+  "notes": "v9: single revolved cavity with rounded seat-cone-bore-mouth transitions, rounded barb, 45\u00b0 cone floor. Confirm volume by running generate.py."
+}
