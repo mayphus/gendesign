@@ -1,6 +1,6 @@
 # Hair catcher / basin guard
 
-A press-fit washbasin drain insert. The **default** is the smooth v2 7-hole
+Worked example in [gendesign](../../README.md): a press-fit washbasin drain insert. The **default** is the smooth v2 7-hole
 bowl: hair and water fall through; a ball larger than **8.6 mm** does not.
 Earlier two-level Voronoi versions (A, B, C) are hair catchers, not toy
 guards. A deeper side-slot basket (v3) is included as an experiment.
@@ -51,4 +51,4 @@ The original public version C — `build.py`, `design.py`, `search.py`,
 [`legacy-C/`](legacy-C/). Run those scripts from that folder. Dependencies
 are the repo-root `requirements.txt`.
 
-Do not start a print until the user says go.
+Do not start a print until the owner says go.

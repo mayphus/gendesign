@@ -1,8 +1,8 @@
-# Voronoi hair catcher
+# Hair catcher, version C
 
-A generative hair catcher for a washbasin drain. Big rounded pebble cells sit flush with the basin. Below them, the struts branch down into a finer layer of cells that catches hair. It's designed to print without supports on a Bambu A1 mini in PLA.
+Original two-level Voronoi design for a washbasin drain, kept as a worked example in [gendesign](../../../README.md). Big rounded pebble cells sit flush with the basin. Below them, the struts branch down into a finer layer of cells that catches hair. It is designed to print without supports on a Bambu A1 mini in PLA.
 
-This is the original public version C. The scripts below run from this folder (`models/hair-catcher/legacy-C/`). Dependencies are the repo-root `requirements.txt`.
+The scripts below run from this folder (`models/hair-catcher/legacy-C/`). Dependencies are the repo-root `requirements.txt`.
 
 ![Version C: top, angled, underside and cut-away views](version-C.png)
 
@@ -40,7 +40,7 @@ Openings are measured as the largest circle that fits through each hole. Equival
 - **Orientation:** `*_print.stl` is already flipped. The flush top and flange go on the bed, with the collar pointing up.
 - **Estimate:** about 14 min plus printer startup, 4.8 g, 43 layers. This came from OrcaSlicer 2.5 with approximate A1 mini settings, so re-slice in Bambu Studio for an exact time.
 
-STL files are attached to the [releases](../../../../../releases). Version C hasn't been test-printed yet.
+Print STLs are on the [v0.3.0-C release](https://github.com/mayphus/gendesign/releases/tag/v0.3.0-C) (`hair_catcher_C_print.stl` is already flipped). Version C has not been test-printed.
 
 ## Run it
 

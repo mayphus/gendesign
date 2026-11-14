@@ -1,4 +1,4 @@
-"""CLI: python -m gendesign <command> ..."""
+"""CLI: gendesign <command> ...  (python -m gendesign is the same entry point)."""
 from __future__ import annotations
 
 import argparse
@@ -49,7 +49,7 @@ def _cmd_sheet(args):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="python -m gendesign", description="Generative-design toolkit")
+    p = argparse.ArgumentParser(prog="gendesign", description="Generative-design toolkit")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     t = sub.add_parser("topopt2d", help="2-D SIMP cantilever (or saved density + STL)")

@@ -1,19 +1,19 @@
 ---
-name: Generative design
-description: Requirements through a measured physical part. Read models/<name>/SKILL.md. Nothing here starts a print.
+name: gendesign
+description: Generative design for a physical part. Requirements, a named method, a measured print. Read models/<name>/SKILL.md. Nothing here starts a print.
 ---
 
-# Generative design
+# gendesign
 
-The goal is a working physical object. A CAD file is a step, not the result.
-Read the model skill for what already failed on the bench. Function comes
-first; looks still matter.
+The goal is a working physical object. An agent and the code share one loop. A saved design JSON rebuilds the geometry; the bench decides whether it worked.
+
+`models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. Planned methods are in [ROADMAP.md](ROADMAP.md).
 
 ## Loop
 
 1. Requirements, with units. Do not invent a fit-critical dimension.
 2. Analysis: loads, flow, or fit — whichever actually decides the part.
-3. Generate / optimize. Save the winner as `designs/<name>/design.json`.
+3. Generate / optimize with a named method. Save the winner as `designs/<name>/design.json`.
 4. Printability and a slice estimate. Re-slice for a real time.
 5. Print only after the owner's go.
 6. Physical test. Measure and photograph.
@@ -35,25 +35,20 @@ models/<name>/designs/<design>/iterations/NN/
     params.json  stats.json  critique.md  preview.png  test.md
 ```
 
-`test.md` (or the same fields in the iteration JSON): printed?, settings,
-measured dims vs designed, fit/function, photos, failure notes, next change.
+`test.md`: printed?, settings, measured dims vs designed, fit/function, photos, failure notes, next change.
 A design-level `test.md` is fine when the print is not one search round.
 Known records: `models/hair-catcher/designs/voronoi-a/test.md`,
 `models/drybox-adapter/designs/v9-8.85/test.md`.
 
-## Layout and commands
-
-```
-gendesign/   examples/   models/<name>/   models/hair-catcher/legacy-C/   templates/model/
-```
+## Commands
 
 ```bash
+pip install -e .
 pip install -r requirements.txt
+gendesign topopt2d --quick --out out/topopt2d
 python models/hair-catcher/generate.py
 python models/drybox-adapter/generate.py
-python -m gendesign topopt2d --quick --out out/topopt2d
 python examples/gyroid_shell/run.py
 ```
 
-Version C scripts run from `models/hair-catcher/legacy-C/`. CadQuery generates
-the guard and the adapter; `gendesign` examples do not need it.
+`python -m gendesign` is the same CLI. Version C scripts run from `models/hair-catcher/legacy-C/`. CadQuery generates the guard and the adapter; the `gendesign` commands do not need it.

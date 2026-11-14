@@ -156,7 +156,7 @@
       "p95_angle": 31.610226655012237
     }
   },
-  "notes": "Rounded pebble cells, branching struts, smoother look than B. Still a two-level hair catcher (fine level ~3.5\u20135.6 mm), not a toy guard. The public repo shipped this as version C.",
+  "notes": "Rounded pebble cells, branching struts, smoother look than B. Still a two-level hair catcher (fine level ~3.5\u20135.6 mm), not a toy guard. Shipped as version C; scripts and metrics are in legacy-C/.",
   "sources": [
     "methods/voronoi_C*.py"
   ]
