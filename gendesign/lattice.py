@@ -45,12 +45,24 @@ def gyroid_mesh(
     # d(field)/d(mm) ~ k, so tau ≈ wall_t * k / 2.
     tau = max(1e-3, wall_t * k / 2.0)
     solid = tau - np.abs(field)
-    # Keep only inside the box (already the grid). March at 0.
+    # One cell of "outside" on every side. Marching cubes leaves a hole
+    # wherever the sheet meets the sample boundary; the empty pad closes
+    # those faces so the exported block is a solid.
+    solid = np.pad(solid, 1, mode="constant", constant_values=float(solid.min()) - 1.0)
+    spacing = (float(xs[1] - xs[0]), float(ys[1] - ys[0]), float(zs[1] - zs[0]))
     try:
-        verts, faces, *_ = measure.marching_cubes(solid, level=0.0, spacing=(xs[1] - xs[0], ys[1] - ys[0], zs[1] - zs[0]))
+        verts, faces, *_ = measure.marching_cubes(solid, level=0.0, spacing=spacing)
     except Exception as e:
         raise RuntimeError(f"gyroid marching cubes failed (try a larger wall or grid): {e}") from e
+    # Index 0 is the pad, one step before the original origin.
+    verts -= np.array(spacing)
     mesh = trimesh.Trimesh(vertices=verts, faces=faces, process=True)
+    mesh.merge_vertices()
+    mesh.update_faces(mesh.unique_faces())
+    mesh.update_faces(mesh.nondegenerate_faces())
+    mesh.remove_unreferenced_vertices()
+    if mesh.volume < 0:
+        mesh.invert()
     if out_stl:
         Path(out_stl).parent.mkdir(parents=True, exist_ok=True)
         mesh.export(str(out_stl))

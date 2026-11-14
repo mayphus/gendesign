@@ -377,13 +377,22 @@ def fillet_hole_lips(body, holes, radius=F_HOLE_LIP):
     if picked_n == 0:
         return body, 0
     try:
+        def _edge_key(edge):
+            typ, mid, length, _rad = _edge_info(edge)
+            return (typ, round(length, 2), tuple(round(float(c), 2) for c in mid))
+
+        before = {_edge_key(o) for o in body.edges().vals()}
         body2 = body.edges(HoleLipSelector()).fillet(radius)
         print(f"filleted {picked_n} hole-lip edges at R={radius} in one op")
-        # second pass: split underside lips whose midpoint wasn't on the axis
+        # Second pass: underside lips the first selector missed. Blend edges
+        # created by the fillet above are new B-splines; filleting those again
+        # fails ("BRep_API: command not done") and does not change the solid.
         class Leftover(cq.Selector):
             def filter(self, objectList):
                 out = []
                 for o in objectList:
+                    if _edge_key(o) not in before:
+                        continue
                     typ, mid, length, rad = _edge_info(o)
                     if typ != "BSPLINE" or length < 8:
                         continue

@@ -21,7 +21,10 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     stl = out / "gyroid.stl"
     mesh = gyroid_mesh(period_mm=8.0, size_mm=(24, 16, 16), wall_t=0.8, out_stl=stl, n=36)
-    ev = evaluate_mesh(mesh)
+    import trimesh
+    exported = trimesh.load(str(stl))
+    assert mesh.is_watertight and exported.is_watertight, "gyroid mesh is not watertight"
+    ev = evaluate_mesh(exported)
     print("wrote", stl, "volume_mm3", round(ev["volume_mm3"], 1), "watertight", ev["watertight"])
     try:
         import matplotlib
