@@ -206,6 +206,285 @@ def bayesian_search(fun, bounds, n=30, seed=0, maximize=True) -> SearchResult:
     return SearchResult(best, trials, "optuna-tpe")
 
 
+@dataclass
+class MultiResult:
+    """NSGA-II output. `front` is the feasible non-dominated set (maximized)."""
+
+    front: list
+    population: list
+    trials: list
+    method: str = "nsga2"
+    history: list = field(default_factory=list)
+
+    def pareto(self, keys=None):
+        if keys is None:
+            return list(self.front)
+        return pareto_front(self.trials, keys)
+
+
+def _as_objectives(raw):
+    """Normalize a fun() return into (objectives, violation, info)."""
+    info = {}
+    violation = 0.0
+    if isinstance(raw, dict):
+        info = dict(raw.get("info") or {})
+        violation = float(raw.get("violation") or 0.0)
+        obj = raw.get("objectives", raw.get("f"))
+    else:
+        obj = raw
+    f = np.asarray(obj, dtype=float).ravel()
+    if not np.all(np.isfinite(f)):
+        violation = max(violation, 1e6)
+        f = np.nan_to_num(f, nan=-1e6, posinf=1e6, neginf=-1e6)
+    return f, violation, info
+
+
+def _dominates(a, b, va, vb):
+    """Constraint-domination. Objectives are maximized. Violation 0 is feasible."""
+    a_ok, b_ok = va <= 0.0, vb <= 0.0
+    if a_ok and not b_ok:
+        return True
+    if b_ok and not a_ok:
+        return False
+    if not a_ok and not b_ok:
+        return va < vb - 1e-12
+    return bool(np.all(a >= b - 1e-12) and np.any(a > b + 1e-12))
+
+
+def _nondominated_ranks(F, V):
+    """Return rank per row (0 is the best front) and the front index lists."""
+    n = len(F)
+    dominated_by = [0] * n
+    dominates = [[] for _ in range(n)]
+    fronts = [[]]
+    for i in range(n):
+        for j in range(i + 1, n):
+            if _dominates(F[i], F[j], V[i], V[j]):
+                dominates[i].append(j)
+                dominated_by[j] += 1
+            elif _dominates(F[j], F[i], V[j], V[i]):
+                dominates[j].append(i)
+                dominated_by[i] += 1
+        if dominated_by[i] == 0:
+            fronts[0].append(i)
+    rank = np.zeros(n, dtype=int)
+    k = 0
+    while fronts[k]:
+        nxt = []
+        for i in fronts[k]:
+            rank[i] = k
+            for j in dominates[i]:
+                dominated_by[j] -= 1
+                if dominated_by[j] == 0:
+                    nxt.append(j)
+        k += 1
+        fronts.append(nxt)
+    fronts.pop()
+    return rank, fronts
+
+
+def _crowding(F, idxs):
+    m = len(idxs)
+    dist = np.zeros(m)
+    if m == 0:
+        return dist
+    if m <= 2:
+        dist[:] = np.inf
+        return dist
+    sub = F[idxs]
+    for j in range(sub.shape[1]):
+        order = np.argsort(sub[:, j])
+        dist[order[0]] = np.inf
+        dist[order[-1]] = np.inf
+        span = sub[order[-1], j] - sub[order[0], j]
+        if span < 1e-12:
+            continue
+        for t in range(1, m - 1):
+            dist[order[t]] += (sub[order[t + 1], j] - sub[order[t - 1], j]) / span
+    return dist
+
+
+def _sbx(p1, p2, lo, hi, rng, eta):
+    c1 = np.array(p1, dtype=float)
+    c2 = np.array(p2, dtype=float)
+    for i in range(len(p1)):
+        if rng.random() > 0.5 or abs(p1[i] - p2[i]) < 1e-14:
+            continue
+        y1, y2 = (p1[i], p2[i]) if p1[i] < p2[i] else (p2[i], p1[i])
+        yl, yu = lo[i], hi[i]
+        span = y2 - y1
+        for which in (0, 1):
+            rnd = rng.random()
+            if which == 0:
+                beta = 1.0 + 2.0 * (y1 - yl) / span
+            else:
+                beta = 1.0 + 2.0 * (yu - y2) / span
+            alpha = 2.0 - beta ** (-(eta + 1.0))
+            if rnd <= 1.0 / alpha:
+                betaq = (rnd * alpha) ** (1.0 / (eta + 1.0))
+            else:
+                betaq = (1.0 / (2.0 - rnd * alpha)) ** (1.0 / (eta + 1.0))
+            if which == 0:
+                child = 0.5 * ((y1 + y2) - betaq * span)
+                c1[i] = float(np.clip(child, yl, yu))
+            else:
+                child = 0.5 * ((y1 + y2) + betaq * span)
+                c2[i] = float(np.clip(child, yl, yu))
+    if rng.random() < 0.5:
+        return c2, c1
+    return c1, c2
+
+
+def _poly_mutation(x, lo, hi, rng, eta, prob):
+    y = np.array(x, dtype=float)
+    for i in range(len(y)):
+        if rng.random() > prob:
+            continue
+        dx = hi[i] - lo[i]
+        if dx <= 0:
+            continue
+        delta1 = (y[i] - lo[i]) / dx
+        delta2 = (hi[i] - y[i]) / dx
+        rnd = rng.random()
+        mut_pow = 1.0 / (eta + 1.0)
+        if rnd < 0.5:
+            xy = 1.0 - delta1
+            val = 2.0 * rnd + (1.0 - 2.0 * rnd) * (xy ** (eta + 1.0))
+            deltaq = val ** mut_pow - 1.0
+        else:
+            xy = 1.0 - delta2
+            val = 2.0 * (1.0 - rnd) + 2.0 * (rnd - 0.5) * (xy ** (eta + 1.0))
+            deltaq = 1.0 - val ** mut_pow
+        y[i] = float(np.clip(y[i] + deltaq * dx, lo[i], hi[i]))
+    return y
+
+
+def _lhs(rng, n, lo, hi):
+    dim = len(lo)
+    u = np.zeros((n, dim))
+    for j in range(dim):
+        slots = (np.arange(n) + rng.random(n)) / n
+        rng.shuffle(slots)
+        u[:, j] = slots
+    return lo + u * (hi - lo)
+
+
+def nsga2(
+    fun: Callable,
+    bounds,
+    pop: int = 32,
+    gens: int = 12,
+    seed: int = 0,
+    eta_cross: float = 12.0,
+    eta_mut: float = 18.0,
+    x0=None,
+    callback: Callable | None = None,
+) -> MultiResult:
+    """NSGA-II. `fun` is maximized.
+
+    `fun(x)` returns a sequence of objectives, or a dict with
+    `objectives` (maximized), optional `violation` (0 = feasible), and
+    optional `info`. Infeasible points lose to feasible ones; among
+    infeasible points, the smaller violation wins.
+
+    `callback(gen, front, population)` runs after each generation,
+    including 0. `front` and `population` are lists of Trial.
+    """
+    rng = np.random.default_rng(seed)
+    lo, hi = _bounds_arr(bounds)
+    dim = len(bounds)
+    pop = max(4, int(pop))
+    if pop % 2:
+        pop += 1
+    X = _lhs(rng, pop, lo, hi)
+    if x0 is not None:
+        seeds = np.atleast_2d(np.asarray(x0, dtype=float))
+        for i, row in enumerate(seeds[:pop]):
+            X[i] = np.clip(row, lo, hi)
+
+    trials: list[Trial] = []
+    history = []
+
+    def evaluate(batch):
+        out_f, out_v, out_t = [], [], []
+        for x in batch:
+            f, v, info = _as_objectives(fun(np.asarray(x, dtype=float)))
+            info = dict(info)
+            info.setdefault("objectives", f.tolist())
+            info["violation"] = v
+            info["feasible"] = v <= 0.0
+            # Scalar stand-in so a single-objective consumer still has a score.
+            t = Trial(np.asarray(x, dtype=float), float(np.sum(f)) if v <= 0 else -1e6 - v, info)
+            trials.append(t)
+            out_f.append(f)
+            out_v.append(v)
+            out_t.append(t)
+        return np.vstack(out_f), np.asarray(out_v, dtype=float), out_t
+
+    def pack(gen, F, V, Ts, Xs):
+        rank, fronts = _nondominated_ranks(F, V)
+        crowd = np.zeros(len(F))
+        for fr in fronts:
+            if not fr:
+                continue
+            cd = _crowding(F, fr)
+            for k, i in enumerate(fr):
+                crowd[i] = cd[k]
+        feas = [Ts[i] for i in fronts[0] if V[i] <= 0.0] if fronts else []
+        # If the first front is entirely infeasible, expose it but flag it.
+        front = feas if feas else ([Ts[i] for i in fronts[0]] if fronts else [])
+        history.append({
+            "gen": gen,
+            "n_feasible": int(np.sum(V <= 0.0)),
+            "front": len(front),
+            "best_objectives": None if not feas else np.max(np.vstack([
+                t.info["objectives"] for t in feas
+            ]), axis=0).tolist(),
+        })
+        if callback is not None:
+            callback(gen, front, Ts)
+        return rank, crowd, fronts, front
+
+    F, V, Ts = evaluate(X)
+    rank, crowd, fronts, front = pack(0, F, V, Ts, X)
+
+    mut_prob = 1.0 / dim
+    for gen in range(1, int(gens) + 1):
+        children = []
+        while len(children) < pop:
+            i, j = rng.integers(0, pop, size=2)
+            a = i if (rank[i], -crowd[i]) <= (rank[j], -crowd[j]) else j
+            i, j = rng.integers(0, pop, size=2)
+            b = i if (rank[i], -crowd[i]) <= (rank[j], -crowd[j]) else j
+            c1, c2 = _sbx(X[a], X[b], lo, hi, rng, eta_cross)
+            children.append(_poly_mutation(c1, lo, hi, rng, eta_mut, mut_prob))
+            if len(children) < pop:
+                children.append(_poly_mutation(c2, lo, hi, rng, eta_mut, mut_prob))
+        C = np.vstack(children)
+        Fc, Vc, Tc = evaluate(C)
+        X = np.vstack([X, C])
+        F = np.vstack([F, Fc])
+        V = np.concatenate([V, Vc])
+        Ts = Ts + Tc
+        rank_all, fronts = _nondominated_ranks(F, V)
+        chosen = []
+        for fr in fronts:
+            if len(chosen) + len(fr) <= pop:
+                chosen.extend(fr)
+                continue
+            cd = _crowding(F, fr)
+            order = np.argsort(-cd)
+            need = pop - len(chosen)
+            chosen.extend([fr[i] for i in order[:need]])
+            break
+        chosen = np.array(chosen[:pop], dtype=int)
+        X, F, V = X[chosen], F[chosen], V[chosen]
+        Ts = [Ts[i] for i in chosen]
+        rank, crowd, fronts, front = pack(gen, F, V, Ts, X)
+
+    return MultiResult(front=list(front), population=list(Ts), trials=trials, method="nsga2", history=history)
+
+
 def pareto_front(trials, keys):
     """Non-dominated subset. Each trial.info must contain `keys`, all maximized."""
     pts = []

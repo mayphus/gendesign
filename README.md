@@ -1,6 +1,6 @@
 # gendesign
 
-Generative design for parts that have to work in the real world. An AI agent and ordinary Python share one loop: requirements, analysis, a method you can rerun, a printability check, a print only when the owner says go, then a measurement that drives the next design.
+AI + generative design for parts that have to work in the real world. The AI agent reviews, reasons, and redirects. The code computes and searches. They share one loop: requirements, analysis, a method you can rerun, a printability check, a print only when the owner says go, then a measurement that drives the next design.
 
 The `gendesign` package is the toolkit (topology optimization, lattices, search, smoothing, evaluation). The parts under `models/` are worked examples of that loop: a basin hair catcher and a drybox adapter. A saved `design.json` rebuilds the geometry. The bench is what finishes the job.
 
@@ -36,9 +36,12 @@ The agent reads the skill, picks a method, and edits code. The method stays insp
 | Plate SIMP on the hair-catcher grate | implemented | [`models/hair-catcher/methods/topopt_plate.py`](models/hair-catcher/methods/topopt_plate.py) |
 | Level-set topology optimization | planned | [ROADMAP.md](ROADMAP.md) |
 | MMA (method of moving asymptotes) | planned | [ROADMAP.md](ROADMAP.md) |
-| Grid, random, genetic algorithm, CMA-ES | implemented | [`gendesign/search.py`](gendesign/search.py) |
+| Grid, random, genetic algorithm, CMA-ES, NSGA-II | implemented | [`gendesign/search.py`](gendesign/search.py) |
+| 2-D orifice drainage estimate | implemented | [`gendesign/flow2d.py`](gendesign/flow2d.py) |
+| Beam-grillage stiffness | implemented | [`gendesign/stiffness.py`](gendesign/stiffness.py) |
 | Bayesian search (Optuna TPE) | implemented, optional | `bayesian_search` in `search.py` (falls back to CMA-ES if Optuna is absent; `pip install -e ".[bayes]"`) |
 | Parametric search on a part | implemented | hair-catcher bowl search, drybox pocket sweep |
+| Hair-catcher generative rounds | in progress | [`models/hair-catcher`](models/hair-catcher/) — AI reviews each round; code searches |
 | General shape / size optimization | planned | [ROADMAP.md](ROADMAP.md) |
 | Voronoi lattices | implemented | `voronoi_lattice` in [`gendesign/lattice.py`](gendesign/lattice.py); hair-catcher A/B/C |
 | TPMS gyroid | implemented | `gendesign gyroid`, [`examples/gyroid_shell`](examples/gyroid_shell/) |

@@ -1,18 +1,21 @@
 ---
 name: Basin hair catcher
 description: >-
-  Washbasin drain insert: hair catcher (Voronoi A/B/C) or toy-blocking
-  guard (smooth v2). Read before resizing or searching this model.
+  Washbasin drain insert. AI + generative design: the agent reviews each
+  round, the code searches. Read before resizing or searching this model.
 ---
 
 # Basin hair catcher
 
-Worked example in gendesign. Loop, print rule, and iteration record: [SKILL.md](../../SKILL.md).
+Worked example of AI + generative design. The agent reads the renders and
+the scores and changes the next round. The code computes the grate and
+searches it. Loop and print rule: [SKILL.md](../../SKILL.md).
 
-Press-fit waste insert. Two jobs, two architectures: Voronoi A/B/C catch
-hair; default **smooth v2** lets hair through and blocks an 8.6 mm ball
-(search cap was 12 mm). Do not score a catcher on the toy-ball limit, or
-the bowl on "catch every hair."
+Press-fit waste insert. Voronoi A/B/C and smooth v2 are earlier designs.
+Smooth v2 lets hair through and blocks an 8.6 mm ball. The generative
+round is a cone of Voronoi cells, scored for drainage, capture, stiffness,
+and volume. Do not score a catcher on the toy-ball limit, or the bowl on
+"catch every hair."
 
 ## Measure
 
@@ -37,5 +40,6 @@ Min strut 1.8 mm, min rim 1.2 mm, flange on the bed, overhang ≤ 50°.
 
 ```bash
 python models/hair-catcher/generate.py
-python models/hair-catcher/optimize.py --method smooth --quick   # also: deep, grid, voronoi, topopt
+python models/hair-catcher/optimize.py --method generative --quick
+# one short NSGA-II round. Review iterations/NN/decisions.md before the next.
 ```

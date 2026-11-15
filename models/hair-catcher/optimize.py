@@ -2,6 +2,8 @@
 """Search for a hair-catcher from requirements.
 
 Methods:
+  generative — AI + generative design. NSGA-II over a Voronoi density field.
+               One short round; the AI reviews renders before the next round.
   smooth   — 7-hole dished bowl (the v2 winner family). Evolutionary search.
   deep     — deeper side-slot basket (v3). Evolutionary + grid seeds.
   grid     — evaluate the deep-basket grid seed pack only.
@@ -34,6 +36,14 @@ def load_req(path: Path) -> dict:
     if path.suffix in {".yaml", ".yml"}:
         return yaml.safe_load(text)
     return json.loads(text)
+
+
+def _run_generative(req, out: Path, quick: bool):
+    import gen_search
+
+    # Short on purpose. A longer search waits until the AI review of this round.
+    pop, gens = (8, 2) if quick else (10, 3)
+    return gen_search.run_round(req, out, pop=pop, gens=gens, seed=7)
 
 
 def _run_smooth(req, out: Path, quick: bool):
@@ -150,7 +160,7 @@ def _run_topopt(req, out: Path, quick: bool):
 def main():
     ap = argparse.ArgumentParser(description="Optimize a basin hair-catcher from requirements")
     ap.add_argument("--method", default="smooth",
-                    choices=["smooth", "deep", "grid", "voronoi", "topopt", "all"])
+                    choices=["generative", "smooth", "deep", "grid", "voronoi", "topopt", "all"])
     ap.add_argument("--requirements", type=Path, default=HERE / "requirements.yaml")
     ap.add_argument("-o", "--out", type=Path, default=None)
     ap.add_argument("--quick", action="store_true", help="smaller population / fewer generations")
@@ -167,7 +177,9 @@ def main():
         dest = out if len(methods) == 1 else out / m
         dest.mkdir(parents=True, exist_ok=True)
         print("==>", m, "->", dest)
-        if m == "smooth":
+        if m == "generative":
+            _run_generative(req, dest, args.quick)
+        elif m == "smooth":
             _run_smooth(req, dest, args.quick)
         elif m == "deep":
             _run_deep(req, dest, args.quick)
