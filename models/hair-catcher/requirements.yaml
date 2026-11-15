@@ -8,8 +8,9 @@ purpose: >
   4304 mm3), not the search.
 
 fit:
-  drain_id_measured_mm: 35.0          # open hole; measure yours
-  collar_od_print_mm: 35.10           # as-printed press-fit target
+  drain_id_measured_mm: 35.0          # owner confirmed 2026-11-15
+  drain_straight_depth_stated_mm: 100 # owner, same day. Approximate, not a caliper log.
+  collar_od_print_mm: 35.10           # press-fit target, kept
   shrink: 0.003                       # 0.3% PLA shrinkage allowance
   collar_wall_mm: 1.6
   flange_diameter_mm: 46.0            # seat was assumed, not measured
@@ -21,7 +22,7 @@ constraints:
   max_ball_mm: 12.0                   # hard cap; anything larger must not pass
   min_strut_mm: 1.50                  # round 02 floor, so the knee is not the deflection line
   min_rim_mm: 1.35
-  max_insert_mm: 18.0
+  max_insert_mm: 18.0                 # search cap through round 02. Chosen knee is 17.9 mm, well under the stated ~100 mm bore.
   max_proud_mm: 2.5
   max_overhang_deg: 45.0              # flange on the bed, no supports
   cone_angle_deg: 47.0                # from horizontal; 2° margin so facets stay under 45°

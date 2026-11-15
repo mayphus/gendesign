@@ -45,3 +45,9 @@ Close on the grate, not cleared to print. The knee is the candidate I would take
 1. If the rim wedges still look like the big holes, shorten them. The ball numbers already say the center is larger. The photo argues.
 2. Stop searching cell count on this knee unless a tighter than 7 mm ball is required. The open pick is a different product (an 8.8 mm throat).
 3. The next useful step is measurement, not another generation: seat diameter, straight bore depth, then a slicer preview of the print STL. No print until those exist.
+
+## Owner measurement, same day
+
+The owner confirmed the drain hole at 35 mm. The press-fit collar stays 35.10 mm. He also said the bore is deep enough, about 100 mm, so there is no 10 mm insert cap. That depth is his estimate, not a saved caliper reading. The round 02 knee, 17.9 mm under the flange on the 47° cone, is the chosen design. It is well under ~100 mm. Round 03 was not run. The flange seat is still unmeasured. Nothing was printed.
+
+Print STL: `iterations/02/picks/knee/basin-knee-print.stl` (flange on the bed).

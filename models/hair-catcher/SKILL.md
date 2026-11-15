@@ -19,11 +19,13 @@ and volume. Do not score a catcher on the toy-ball limit, or the bowl on
 
 ## Measure
 
-Caliper the clear hole (~35 mm De40 here), seat width, clear depth, proud
-height, and the largest object that must not fall in. Collar print OD
-35.10 mm (CAD 35.21, 0.3% PLA shrink). Flange Ø46 × 1.6 mm was **assumed,
-not measured**. v2 is 10.2 mm deep and flush; do not exceed 18 mm without
-a new depth. Deep v3 needs ~35 mm of straight bore, which was not measured.
+The owner confirmed the clear hole at 35 mm on 2026-11-15. Collar print OD
+stays 35.10 mm (CAD 35.21, 0.3% PLA shrink). He also said the straight bore
+is about 100 mm deep. That figure is his estimate, not a caliper log.
+Flange Ø46 × 1.6 mm is still **assumed, not measured**. The chosen
+generative knee inserts 17.9 mm, which is well under that bore. v2 is
+10.2 mm deep. Deep v3 still needs a measured straight bore before anyone
+treats it as a fit.
 Printed collars shrink — confirm a press-fit with a test, not CAD alone.
 Min strut 1.8 mm, min rim 1.2 mm, flange on the bed, overhang ≤ 50°.
 

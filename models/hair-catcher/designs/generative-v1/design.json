@@ -49,6 +49,6 @@
     "v2_open_pct": 50.54,
     "v2_volume": 4304.4
   },
-  "title": "Round 02 knee. Closest candidate, not cleared to print.",
-  "notes": "Center-open grade, 1.5 mm strut floor, 4 mm opening floor, two objectives. See iterations/02/decisions.md. Flange diameter and bore depth are still unmeasured."
+  "title": "Round 02 knee. Chosen design. Not printed.",
+  "notes": "Owner confirmed a 35 mm hole and said the bore is about 100 mm deep, so the 17.9 mm insert stays. Collar print OD stays 35.10 mm. Flange diameter is still unmeasured. See iterations/02/decisions.md and test.md."
 }

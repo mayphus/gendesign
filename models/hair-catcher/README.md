@@ -5,7 +5,7 @@ bowl: hair and water fall through; a ball larger than **8.6 mm** does not.
 Earlier two-level Voronoi versions (A, B, C) are hair catchers, not toy
 guards. A deeper side-slot basket (v3) is included as an experiment.
 
-Round 02 is the current search: 1.5 mm struts, a 4 mm opening floor, and a center-open grade. It is not cleared to print. Log: [iterations/02](designs/generative-v1/iterations/02/decisions.md).
+The chosen design is the round 02 knee: 17.9 mm insert, 47° cone, 35.10 mm press-fit collar. The owner confirmed the hole at 35 mm and said the bore is about 100 mm deep, so that insert stays. It has not been printed. Log: [iterations/02](designs/generative-v1/iterations/02/decisions.md). Drain note: [test.md](designs/generative-v1/test.md).
 
 ![Round 02 Pareto, top views](designs/generative-v1/iterations/02/pareto-sheet.png)
 ![Round 02 knee, 3/4](designs/generative-v1/iterations/02/picks/knee/preview-34.png)
