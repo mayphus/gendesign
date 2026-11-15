@@ -63,4 +63,6 @@ The knee is the candidate. Flow is 4% above the target, capture is close to roun
 
 ## Owner decision
 
-Pending. Only the owner records this: `gendesign approve <this folder> <pick>`. Nothing is printed before that.
+Approved `knee` on 2026-11-14. Owner, in chat on 2026-11-14: "approve" (asked: approve the round 01 knee and open it in OrcaSlicer?). Print with a 2-loop skirt, no brim.
+
+Final print file: rebuilt at a 0.07 mm grid with `MODEL.export` (599,998 faces, watertight, one body, 3326.5 mm³, 0 mm² over air, collar 35.21 mm CAD). Opened in OrcaSlicer for the owner to slice and start. After the print: a `test.md` in `picks/knee/` (timed litre, 30 N press, flange fit) with `calibrate:` lines.

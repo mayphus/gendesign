@@ -56,6 +56,18 @@ reference_smooth_v2:
   open_area_pct: 50.54
   volume_mm3: 4304.4
 
+print:
+  # Slicer settings for every print of this model. Not searched; the owner's practice.
+  printer: Bambu A1 mini
+  material: PLA
+  layer_mm: 0.20
+  infill_pct: 100            # small part
+  supports: false
+  orientation: top face on the bed (print.stl)
+  skirt_loops: 2             # owner, 2026-11-14: prime the nozzle before the visible first layer
+  skirt_distance_mm: 3
+  brim: false                # a brim would sit on the visible flush edge
+
 physics:
   cd: 0.61
   head_mm: 5.0

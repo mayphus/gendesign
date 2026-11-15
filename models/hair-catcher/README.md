@@ -8,7 +8,7 @@ Worked example for [gendesign](../../README.md): a press-fit washbasin drain ins
 
 The analysis derived the targets from [requirements.yaml](requirements.yaml) before any geometry. Drainage binds: 408 mm² of open area, 51% of the bore, for the same flow as smooth v2 under the orifice model. Structure has 1.29x margin at a 2.2 mm plate. Holes must clear 4.0 mm because water holds a film below the 2.7 mm capillary length. A flat plate meets that, so it was chosen over a cone (needs ~18 mm of depth and runs at the overhang limit) and a two-level grate (bridges, or needs vaults, and loses flow).
 
-Round 01 knee is the candidate: 11 holes 5.2–6.3 mm, 424 mm² open, 81 cm³/s, hard-push stress 16.2 of 20 MPa, watertight, nothing over air. Round 02 checked the two open questions: corners are already rounder than the hair-hook and water-wedge radii (zero snag, zero corner water), and a cold search twice as large found nothing that beats this knee. Awaiting the owner's go; not printed.
+Round 01 knee is the candidate: 11 holes 5.2–6.3 mm, 424 mm² open, 81 cm³/s, hard-push stress 16.2 of 20 MPa, watertight, nothing over air. Round 02 checked the two open questions: corners are already rounder than the hair-hook and water-wedge radii (zero snag, zero corner water), and a cold search twice as large found nothing that beats this knee. **Approved by the owner on 2026-11-14** for a print: 2-loop skirt, no brim, 100% infill, top face on the bed. Not printed yet.
 
 ![How the hair catcher is generated](docs/how-it-is-generated.png)
 
@@ -24,7 +24,7 @@ gendesign generate models/hair-catcher models/hair-catcher/designs/pebble-plate/
 python models/hair-catcher/generate.py --design models/hair-catcher/designs/smooth-v2/design.json   # older designs
 ```
 
-`print.stl` has the flush top face on the bed, collar up, no supports. 0.2 mm PLA, A1 mini profile, 100% infill. Do not start a print until the owner says go.
+`print.stl` has the flush top face on the bed, collar up, no supports. Print settings live in `requirements.yaml` under `print:` (A1 mini, PLA 0.2 mm, 100% infill, 2-loop skirt at 3 mm, no brim). Do not start a print until the owner says go.
 
 ## Measure
 
@@ -34,7 +34,7 @@ Owner confirmed the clear hole at 35 mm (2026-11-15). Collar prints at 35.10 mm 
 
 | Design | What it is | Status |
 |---|---|---|
-| [pebble-plate](designs/pebble-plate/) | Rounds through `gendesign round`, generator `pebble-plate` in [model.py](model.py) | rounds 00–02 reviewed; round 01 knee awaiting owner |
+| [pebble-plate](designs/pebble-plate/) | Rounds through `gendesign round`, generator `pebble-plate` in [model.py](model.py) | round 01 knee **approved 2026-11-14**, to be printed |
 | [pebble-e](designs/pebble-e/) | Single flat pebble plate, 15 holes 4.5–5.7 mm, 0 mm² over air, ~12 min, 4.1 g. The generator's starting point; rebuilds exactly. Fails today's 408 mm² target (366). | not printed |
 | [pebble-d](designs/pebble-d/) | Two-level made self-supporting: funnel walls, vaulted fine layer, teardrop windows | not printed; fine cells near the film limit |
 | [pebble-c](designs/pebble-c/) | Two-level pebble cells and branching struts, released as [v0.3.0-C](https://github.com/mayphus/gendesign/releases/tag/v0.3.0-C) | not printed; ~189 mm² bridges over air |
