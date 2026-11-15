@@ -20,9 +20,6 @@ def main():
             str(ROOT / f"out/hair-catcher-{name}"),
         ]
         runpy.run_path(str(ROOT / "models/hair-catcher/generate.py"), run_name="__main__")
-    print("==> drybox-adapter v9")
-    sys.argv = ["generate.py", "-P", "8.85", "-o", str(ROOT / "out/drybox-v9")]
-    runpy.run_path(str(ROOT / "models/drybox-adapter/generate.py"), run_name="__main__")
     print("done")
 
 

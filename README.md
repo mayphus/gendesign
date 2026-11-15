@@ -27,14 +27,13 @@ flowchart LR
 
 A round refuses to run without an analysis. A calibration from a print corrects an evaluator; it never edits `requirements.yaml`. Only a wrong requirement goes back to the owner. See [SKILL.md](SKILL.md) for the rules the agent follows and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the interfaces.
 
-## Examples
+## Example
 
-Each example is a model folder with `requirements.yaml`, `model.py`, `analysis.md`, and a `REPORT.md` you can review.
+The example is a model folder with `requirements.yaml`, `model.py`, `analysis.md`, and a `REPORT.md` you can review.
 
 | Example | What the analysis decided | Report |
 |---|---|---|
 | [Hair catcher](models/hair-catcher/) | Drainage binds (408 mm² open for v2-level flow); structure has 1.29x margin. Flat plate chosen over cone and two-level. Round 01 knee: 11 holes 5.2–6.3 mm, 81 cm³/s, nothing over air. | [REPORT.md](models/hair-catcher/REPORT.md) |
-| [Drybox adapter](models/drybox-adapter/) | Fit, not strength: pocket = 8.7 mm pin + 0.15 mm print undersize. One-gene sweep, then a coupon. | [REPORT.md](models/drybox-adapter/REPORT.md) |
 
 ![Hair catcher round 01 picks](models/hair-catcher/designs/pebble-plate/iterations/01/picks.png)
 

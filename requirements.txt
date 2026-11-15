@@ -10,7 +10,7 @@ matplotlib>=3.8
 pillow>=10.0
 pyyaml>=6.0
 
-# Parts: CadQuery (smooth-v2, drybox), mesh decimation, renders
+# Parts: CadQuery (smooth-v2), mesh decimation, renders
 cadquery==2.8.0
 fast-simplification>=0.1
 pyvista>=0.43

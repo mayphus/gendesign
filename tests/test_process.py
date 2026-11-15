@@ -35,7 +35,7 @@ class ToyEvaluator(Evaluator):
 
 class ProcessTests(unittest.TestCase):
     def test_schema_accepts_the_examples(self):
-        for rel in ("models/hair-catcher/requirements.yaml", "models/drybox-adapter/requirements.yaml"):
+        for rel in ("models/hair-catcher/requirements.yaml", "templates/model/requirements.yaml"):
             req = load_requirements(ROOT / rel)
             self.assertEqual(req.errors, [], rel)
             self.assertTrue(req.ok)

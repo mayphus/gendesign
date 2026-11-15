@@ -5,7 +5,6 @@ The loop (requirements → analysis → round → AI review → owner go → tes
 ## Next for the examples
 
 - **Hair catcher:** add `gendesign.corners` (hair snag, corner water) as an objective, so hole rounding has to compete with drainage (round 00 and 01 reviews). Replace the two assumed targets with a measured tap flow and the largest acceptable hole. Calibrate the 20 MPa allowable with a 30 N press on a coupon.
-- **Drybox adapter:** print the 8.80 / 8.85 / 8.90 coupons and record the undersize with a `calibrate: fit.undersize_mm` line.
 
 ## Analysis and evaluation
 
@@ -19,6 +18,10 @@ The loop (requirements → analysis → round → AI review → owner go → tes
 - **Level-set** topology optimization and an **MMA** update beside optimality criteria.
 - **Shape and size optimization** as a general solver.
 - **Graph / rule-based generation:** grow struts, junctions and ports under explicit rules, then mesh with `gendesign.field`.
+
+## GPU
+
+Everything runs on the CPU today. When 3-D FEA, 3-D topology optimization or surrogate training outgrow it, run those as batch jobs on a Kaggle GPU notebook (pushed and collected with the `kaggle` CLI) behind an optional remote evaluator. The interactive loop stays local.
 
 ## Surrogates
 
