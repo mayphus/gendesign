@@ -15,7 +15,7 @@ The loop (requirements → analysis → round → AI review → owner go → tes
 
 ## Generators
 
-- **Topology optimization as a round generator.** `topopt2d` and `topopt3d` (SIMP, optimality criteria) run today from the CLI; wire them as a `Generator` whose genes are volume fraction, filter radius and load cases, with an overhang filter for printing.
+- **Topology optimization as a round generator.** Done for 2-D: [`models/cantilever-bracket/`](models/cantilever-bracket/) uses `topopt2d` as a `Generator` (genes: volfrac, filter radius, load height) with an optional +y overhang projection. Still to do: wire `topopt3d` the same way.
 - **Level-set** topology optimization and an **MMA** update beside optimality criteria.
 - **Shape and size optimization** as a general solver.
 - **Graph / rule-based generation:** grow struts, junctions and ports under explicit rules, then mesh with `gendesign.field`.

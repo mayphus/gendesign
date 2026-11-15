@@ -1,0 +1,66 @@
+{
+  "metrics": {
+    "params": {
+      "volfrac": 0.2832,
+      "rmin_mm": 2.935,
+      "load_y_frac": 0.6303,
+      "nelx": 30,
+      "nely": 10,
+      "niter": 20,
+      "rmin_elem": 1.2,
+      "compliance": 673.174013,
+      "volume": 0.2832,
+      "overhang_frac": 0.617,
+      "print_flat": true,
+      "L_mm": 120.0,
+      "H_mm": 40.0,
+      "thickness_mm": 5.0
+    },
+    "compliance": 673.174013,
+    "volume": 0.2832,
+    "volfrac_gene": 0.2832,
+    "overhang_frac": 0.617,
+    "print_flat": true,
+    "objectives": [
+      -673.174013,
+      -0.2832
+    ],
+    "violation": 0.0,
+    "feasible": true
+  },
+  "mesh": {
+    "watertight": true,
+    "volume_mm3": 3473.0102398428767,
+    "mass_g_est": 4.306532697405167,
+    "extents_mm": [
+      114.03842377662659,
+      40.0,
+      5.0
+    ],
+    "bounds": [
+      [
+        3.1805169582366943,
+        -2.0,
+        0.0
+      ],
+      [
+        117.21894073486328,
+        38.0,
+        5.0
+      ]
+    ],
+    "faces": 588,
+    "min_feature_mm": 2.8509605944156653,
+    "overhang": {
+      ">45deg_mm2": 694.6020479685753,
+      ">50deg_mm2": 694.6020479685753,
+      ">60deg_mm2": 694.6020479685753,
+      ">70deg_mm2": 694.6020479685753,
+      ">80deg_mm2": 694.6020479685753,
+      "downward_mm2": 694.6020479685753,
+      "max_overhang_deg": 45.0,
+      "over_limit_mm2": 694.6020479685753
+    },
+    "bodies": 1
+  }
+}

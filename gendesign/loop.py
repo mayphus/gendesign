@@ -256,7 +256,8 @@ def _preview_3d(folder, title):
         from .render import preview_sheet
 
         return preview_sheet(stl, Path(folder) / "preview-3d.png", title=title)
-    except ImportError:
+    except Exception:
+        # Missing GL / headless VTK can fail hard; a round must still finish.
         return None
 
 

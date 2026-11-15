@@ -204,9 +204,14 @@ def topopt_2d(
     # fixed: list of (node, dof) with dof in {0,1}; loads: list of (node, dof, value)
     fixed=None,
     loads=None,
+    overhang: bool = False,
     verbose: bool = True,
 ) -> TopOpt2DResult:
-    """Run 2-D SIMP. Density array is shaped (nely, nelx), x to the right, y up."""
+    """Run 2-D SIMP. Density array is shaped (nely, nelx), x to the right, y up.
+
+    If overhang is True, each OC update is projected with overhang_project so the
+    result is self-supporting when built upward (+y) in the plane of the plate.
+    """
     nelx, nely = int(nelx), int(nely)
     KE = _element_stiffness(nu)
     ndof = 2 * (nelx + 1) * (nely + 1)
@@ -317,6 +322,9 @@ def topopt_2d(
                 l1 = lmid
             else:
                 l2 = lmid
+        if overhang:
+            # After OC: drop unsupported material (build +y). Volume falls, still feasible.
+            xPhys = overhang_project(xPhys)
         change = float(np.abs(xnew - x).max())
         x = xnew
         compl.append(c)
@@ -332,7 +340,7 @@ def topopt_2d(
         nely=nely,
         volfrac=volfrac,
         residual=change,
-        info={"iters": loop, "penal": penal, "rmin": rmin},
+        info={"iters": loop, "penal": penal, "rmin": rmin, "overhang": bool(overhang)},
     )
 
 
@@ -342,3 +350,43 @@ def default_cantilever_nodes(nelx, nely):
     n_load = nelx * (nely + 1) + nely // 2
     loads = [(n_load, 1, -1.0)]
     return fixed, loads
+
+
+def overhang_project(x: np.ndarray, *, eps: float = 0.01) -> np.ndarray:
+    """Self-supporting projection for in-plane FDM (build direction +y, origin lower).
+
+    Each element may keep density only up to what the three cells beneath it
+    (left / center / right) already support — a 45° cone on a square grid.
+    The bottom row sits on the build plate and is unchanged. Soft floor `eps`
+    keeps the SIMP stiffness matrix nonsingular.
+    """
+    x = np.asarray(x, dtype=float)
+    out = x.copy()
+    nely, nelx = out.shape
+    for iy in range(1, nely):
+        below = out[iy - 1]
+        support = below.copy()
+        support[1:] = np.maximum(support[1:], below[:-1])
+        support[:-1] = np.maximum(support[:-1], below[1:])
+        out[iy] = np.minimum(out[iy], np.maximum(eps, support))
+    return out
+
+
+def overhang_fraction(density: np.ndarray, threshold: float = 0.5) -> float:
+    """Fraction of solid elements that lack solid support from the row below."""
+    x = np.asarray(density, dtype=float) >= threshold
+    nely, nelx = x.shape
+    if nely < 2 or not x.any():
+        return 0.0
+    unsupported = 0
+    solid = 0
+    for iy in range(1, nely):
+        for ix in range(nelx):
+            if not x[iy, ix]:
+                continue
+            solid += 1
+            lo = max(0, ix - 1)
+            hi = min(nelx, ix + 2)
+            if not x[iy - 1, lo:hi].any():
+                unsupported += 1
+    return float(unsupported / solid) if solid else 0.0

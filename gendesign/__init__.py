@@ -30,7 +30,7 @@ from .lattice import gyroid_mesh, voronoi_lattice
 from .search import cma_es, genetic_minimize, grid_search, nsga2, pareto_front, random_search
 from .stiffness import grillage_deflection, section_properties
 from .stress2d import plane_stress_peak
-from .topopt2d import topopt_2d
+from .topopt2d import overhang_fraction, overhang_project, topopt_2d
 from .topopt3d import topopt_3d
 
 __all__ = [
@@ -84,6 +84,8 @@ __all__ = [
     "random_search",
     "score_chart",
     "section_properties",
+    "overhang_fraction",
+    "overhang_project",
     "topopt_2d",
     "topopt_3d",
     "voronoi_lattice",

@@ -34,6 +34,7 @@ The example is a model folder with `requirements.yaml`, `model.py`, `analysis.md
 | Example | What the analysis decided | Report |
 |---|---|---|
 | [Hair catcher](models/hair-catcher/) | Drainage binds (408 mm² open for v2-level flow); structure has 1.29x margin. Flat plate chosen over cone and two-level. Round 01 knee (confirmed by a cold round 02): 11 holes 5.2–6.3 mm, 81 cm³/s, zero hair snag and corner water, nothing over air. Approved by the owner 2026-11-14; to be printed. | [REPORT.md](models/hair-catcher/REPORT.md) |
+| [Cantilever bracket](models/cantilever-bracket/) | Tip load binds the layout; volume trades against stiffness. 2-D SIMP chosen over a parametric two-bar truss. Genes: volfrac, filter radius, load height. | run `gendesign report models/cantilever-bracket` |
 
 ![Hair catcher round 01 picks](models/hair-catcher/designs/pebble-plate/iterations/01/picks.png)
 
@@ -45,13 +46,13 @@ The example is a model folder with `requirements.yaml`, `model.py`, `analysis.md
 | Generator / Evaluator interfaces, seeded search, Pareto result | implemented | [`gendesign/process.py`](gendesign/process.py) |
 | NSGA-II, grid, random, genetic, CMA-ES, Bayesian (Optuna TPE) | implemented | [`gendesign/search.py`](gendesign/search.py) |
 | Implicit / signed-distance modeling: smooth Booleans, exact polygon fields, meshing, overhang check | implemented | [`gendesign/field.py`](gendesign/field.py) |
-| 2-D and 3-D SIMP topology optimization (optimality criteria, density filter) | implemented, not yet a round generator | [`gendesign/topopt2d.py`](gendesign/topopt2d.py), [`topopt3d.py`](gendesign/topopt3d.py), `gendesign topopt2d` |
+| 2-D and 3-D SIMP topology optimization (optimality criteria, density filter, optional overhang projection) | 2-D wired as a round generator; 3-D still CLI-only | [`gendesign/topopt2d.py`](gendesign/topopt2d.py), [`topopt3d.py`](gendesign/topopt3d.py), [`models/cantilever-bracket/`](models/cantilever-bracket/), `gendesign topopt2d` |
 | Plane-stress FE peak stress, beam grillage | implemented | [`stress2d.py`](gendesign/stress2d.py), [`stiffness.py`](gendesign/stiffness.py) |
 | Orifice drainage with a capillary film limit | implemented | [`gendesign/flow2d.py`](gendesign/flow2d.py) |
 | Corner proxies: hair snag, corner water | implemented, not yet in the hair-catcher round | [`gendesign/corners.py`](gendesign/corners.py) |
 | Voronoi and gyroid lattices | implemented | [`gendesign/lattice.py`](gendesign/lattice.py), `gendesign gyroid` |
 | Printability: volume, min feature, overhang, optional PrusaSlicer | implemented | [`gendesign/evaluate.py`](gendesign/evaluate.py) |
-| 3-D solid FEA, level-set, MMA, CFD, topology optimization inside a round | planned | [ROADMAP.md](ROADMAP.md) |
+| 3-D solid FEA, level-set, MMA, CFD, 3-D topology optimization inside a round | planned | [ROADMAP.md](ROADMAP.md) |
 
 ## Quick start
 
