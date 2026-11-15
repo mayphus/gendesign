@@ -39,7 +39,8 @@
   "checks": [
     "At the 2.2 mm plate and 51% open: fingertip deflection 0.088 mm (limit 0.5), hard-push rib stress 15.5 MPa (allowable 20). Structure is close: 1.29x on the tighter of the two, so the plate stays at 2.2 mm (minimum 1.94).",
     "Drainage binds: 408 mm\u00b2 of open area is 51% of the bore.",
-    "A flat plate with 1.5 mm ribs reaches that with holes of about 5.3 mm inscribed (hexagonal estimate, \u00b115%). A 47.0\u00b0 cone has 1.47x the area, so holes can drop to the 4.0 mm floor."
+    "A flat plate with 1.5 mm ribs reaches that with holes of about 5.3 mm inscribed (hexagonal estimate, \u00b115%). A 47.0\u00b0 cone has 1.47x the area, so holes can drop to the 4.0 mm floor.",
+    "Hole pattern: relaxed Voronoi needs 5.3 mm; regular hex grid needs 5.3 mm (6 cells cut under the 4.0 mm floor at the wall); round holes, hex grid needs 6.7 mm (27% larger); round holes, square grid needs 10.8 mm (105% larger)."
   ],
   "concepts": [
     {
@@ -59,6 +60,48 @@
     }
   ],
   "chosen": "flat plate",
+  "patterns": [
+    {
+      "name": "relaxed Voronoi",
+      "hole_mm": 5.3,
+      "verdict": "chosen",
+      "why": "Near-hexagonal cells: the least rib per open area (honeycomb), equal rib width everywhere, and cells mirrored across the wall end at the round boundary with no slivers. Can be graded."
+    },
+    {
+      "name": "regular hex grid",
+      "hole_mm": 5.3,
+      "verdict": "rejected",
+      "note": "6 cells cut under the 4.0 mm floor at the wall",
+      "why": "Same hole size as Voronoi, but the round wall cuts the grid: 13 full cells and 6 slivers that either hold water or must be filled, losing open area."
+    },
+    {
+      "name": "round holes, hex grid",
+      "hole_mm": 6.7,
+      "verdict": "rejected",
+      "note": "27% larger",
+      "why": "Round holes leave solid corners between them, so they must be larger for the same flow: worse capture."
+    },
+    {
+      "name": "round holes, square grid",
+      "hole_mm": 10.8,
+      "verdict": "rejected",
+      "note": "105% larger",
+      "why": "Even more solid between holes than the hex grid."
+    },
+    {
+      "name": "slots",
+      "hole_mm": null,
+      "verdict": "rejected",
+      "why": "A narrow width passes the ball test, but hair runs along a slot; the capture proxy does not apply. Long ribs are also the weakest in bending."
+    },
+    {
+      "name": "radial spokes",
+      "hole_mm": null,
+      "verdict": "rejected",
+      "why": "Openings widen toward the rim, so the outermost hole sets capture."
+    }
+  ],
+  "pattern": "relaxed Voronoi",
   "generator": "pebble-plate",
   "open_questions": [
     "No tap flow was given. The flow target is smooth v2's 78 cm\u00b3/s under the same orifice model; a measured tap rate should replace it (function.drain_flow_min_cm3_s).",

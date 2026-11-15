@@ -15,7 +15,7 @@ Fit: drain_id_measured_mm 35.0, drain_straight_depth_stated_mm 100, collar_od_pr
 
 ## Analysis
 
-From `analysis.md` (2026-11-14). Concept: **flat plate** (generator `pebble-plate`).
+From `analysis.md` (2026-11-14). Concept: **flat plate**, pattern **relaxed Voronoi** (generator `pebble-plate`).
 
 | Target | Value | From |
 |---|---:|---|
@@ -30,6 +30,7 @@ From `analysis.md` (2026-11-14). Concept: **flat plate** (generator `pebble-plat
 - At the 2.2 mm plate and 51% open: fingertip deflection 0.088 mm (limit 0.5), hard-push rib stress 15.5 MPa (allowable 20). Structure is close: 1.29x on the tighter of the two, so the plate stays at 2.2 mm (minimum 1.94).
 - Drainage binds: 408 mm² of open area is 51% of the bore.
 - A flat plate with 1.5 mm ribs reaches that with holes of about 5.3 mm inscribed (hexagonal estimate, ±15%). A 47.0° cone has 1.47x the area, so holes can drop to the 4.0 mm floor.
+- Hole pattern: relaxed Voronoi needs 5.3 mm; regular hex grid needs 5.3 mm (6 cells cut under the 4.0 mm floor at the wall); round holes, hex grid needs 6.7 mm (27% larger); round holes, square grid needs 10.8 mm (105% larger).
 
 - **flat plate** (chosen)
 - **cone** (fallback)

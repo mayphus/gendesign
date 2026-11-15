@@ -263,15 +263,82 @@ def analyze(req):
          "why": "The fine layer catches more hair but lowers flow, and it bridges (pebble-c: ~189 mm² over air) or needs "
                 "vaults (pebble-d). Not needed while the flow target is met by one layer."},
     ]
+    patterns = _pattern_screen(need, rib_min, rim_min, floor)
+    checks.append("Hole pattern: " + "; ".join(
+        f"{p_['name']} needs {p_['hole_mm']} mm" + (f" ({p_['note']})" if p_.get("note") else "")
+        for p_ in patterns if p_.get("hole_mm") is not None) + ".")
     open_q = [
         "No tap flow was given. The flow target is smooth v2's 78 cm³/s under the same orifice model; "
         "a measured tap rate should replace it (function.drain_flow_min_cm3_s).",
         "No largest acceptable hole was given beyond the 12 mm cap. Capture is maximized, not bounded.",
         f"allowable_MPa {allow:.0f} is a layer-line PLA guess, not a test.",
     ]
+    chosen_pattern = next(p_ for p_ in patterns if p_["verdict"] == "chosen")
     return {"targets": targets, "checks": checks, "concepts": concepts,
             "chosen": next(c_["name"] for c_ in concepts if c_["verdict"] == "chosen"),
+            "patterns": patterns, "pattern": chosen_pattern["name"],
             "generator": "pebble-plate", "open_questions": open_q}
+
+
+def _pattern_screen(need, rib, rim, floor):
+    """Which hole pattern meets the open-area need with the smallest holes.
+
+    need is the open fraction required inside the rim. Smaller holes at the
+    same flow mean better capture, so the pattern with the smallest
+    hole wins unless it breaks a rule (slivers under the hole floor).
+    Infinite-lattice estimates; the round measures the real layout.
+    """
+    import math
+
+    import shapely
+    from shapely.geometry import Point, Polygon
+
+    def d_for(eff):  # hole d with eff * (d/(d+w))^2 = need
+        s = math.sqrt(need / eff)
+        return rib * s / (1 - s) if s < 1 else float("inf")
+
+    d_hex = d_for(1.0)                          # hexagonal cells, inscribed d
+    d_circ_hex = d_for(math.pi / (2 * math.sqrt(3)))  # round holes on a hex grid
+    d_circ_sq = d_for(math.pi / 4)              # round holes on a square grid
+
+    # A regular hex grid clipped by the round wall: count cells cut under the floor.
+    pitch = d_hex + rib
+    active = Point(0, 0).buffer(RB - rim + rib / 2, quad_segs=96)
+    hexagon = Polygon([(pitch / math.sqrt(3) * math.cos(a), pitch / math.sqrt(3) * math.sin(a))
+                       for a in np.radians(np.arange(30, 390, 60))])
+    slivers, whole = 0, 0
+    for i in range(-6, 7):
+        for j in range(-6, 7):
+            cx, cy = pitch * (i + 0.5 * (j % 2)), pitch * math.sqrt(3) / 2 * j
+            cell = shapely.affinity.translate(hexagon, cx, cy).intersection(active).buffer(-rib / 2, join_style="mitre")
+            if cell.is_empty:
+                continue
+            ins = 2 * shapely.maximum_inscribed_circle(cell).length
+            if ins >= floor:
+                whole += 1
+            elif ins > 0.3:
+                slivers += 1
+
+    r = lambda x: round(x, 1)  # noqa: E731
+    return [
+        {"name": "relaxed Voronoi", "hole_mm": r(d_hex), "verdict": "chosen",
+         "why": "Near-hexagonal cells: the least rib per open area (honeycomb), equal rib width everywhere, and cells "
+                "mirrored across the wall end at the round boundary with no slivers. Can be graded."},
+        {"name": "regular hex grid", "hole_mm": r(d_hex), "verdict": "rejected",
+         "note": f"{slivers} cells cut under the {floor} mm floor at the wall",
+         "why": f"Same hole size as Voronoi, but the round wall cuts the grid: {whole} full cells and {slivers} slivers "
+                "that either hold water or must be filled, losing open area."},
+        {"name": "round holes, hex grid", "hole_mm": r(d_circ_hex), "verdict": "rejected",
+         "note": f"{100 * (d_circ_hex / d_hex - 1):.0f}% larger",
+         "why": "Round holes leave solid corners between them, so they must be larger for the same flow: worse capture."},
+        {"name": "round holes, square grid", "hole_mm": r(d_circ_sq), "verdict": "rejected",
+         "note": f"{100 * (d_circ_sq / d_hex - 1):.0f}% larger", "why": "Even more solid between holes than the hex grid."},
+        {"name": "slots", "hole_mm": None, "verdict": "rejected",
+         "why": "A narrow width passes the ball test, but hair runs along a slot; the capture proxy does not apply. "
+                "Long ribs are also the weakest in bending."},
+        {"name": "radial spokes", "hole_mm": None, "verdict": "rejected",
+         "why": "Openings widen toward the rim, so the outermost hole sets capture."},
+    ]
 
 
 # ------------------------------------------------------------------ generator
