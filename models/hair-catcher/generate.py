@@ -29,6 +29,10 @@ def generate_from_design(design: dict, out: Path, preview=False, slice_print=Fal
         params = params_from_mapping(src)
         prefix = design.get("prefix") or "basin_guard_smooth"
         return generate(params=params, out_dir=out, prefix=prefix, preview=preview, slice_print=slice_print)
+    if method in ("generative", "gen"):
+        from methods.gen_grate import rebuild
+
+        return rebuild(design, out, preview=preview)
     if method in ("deep", "deep-v3"):
         # The deep builder is a script with a fixed genome; we write the genome
         # next to the output and invoke the CAD build after injecting it.

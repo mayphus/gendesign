@@ -1,36 +1,67 @@
 name: hair-catcher
 units: mm
 purpose: >
-  A washbasin drain insert. Early variants catch hair on a two-level grate.
-  The default smooth v2 guard lets hair and water through and only has to
-  stop toys / objects larger than the ball limit.
+  Press-fit washbasin drain insert. AI + generative design: the agent
+  reviews renders and scores and redirects the next round; the code
+  searches a Voronoi density field. Smooth v2 is the hand-tuned
+  reference (struts 1.8 mm, ball 8.6 mm, open area 50.54%, volume
+  4304 mm3), not the search.
 
 fit:
-  drain_id_measured_mm: 35.0          # open hole; measure yours
-  collar_od_print_mm: 35.10           # as-printed press-fit target
+  drain_id_measured_mm: 35.0          # owner confirmed 2026-11-15
+  drain_straight_depth_stated_mm: 100 # owner, same day. Approximate, not a caliper log.
+  collar_od_print_mm: 35.10           # press-fit target, kept
   shrink: 0.003                       # 0.3% PLA shrinkage allowance
   collar_wall_mm: 1.6
   flange_diameter_mm: 46.0            # seat was assumed, not measured
   flange_thickness_mm: 1.6
   lead_in_mm: 0.7                     # 45° chamfer
+  collar_engagement_mm: 10.2          # press-fit skirt, same as smooth v2
 
 constraints:
-  max_ball_mm: 12.0                   # hard cap used in the v2 search
-  target_throat_mm: 8.6               # smooth-v2 winner throat
-  min_strut_mm: 1.80
-  min_rim_mm: 1.20
-  min_insert_mm: 4.0
-  max_insert_mm: 18.0                 # v2 bowl; deep v3 explored up to 35
+  max_ball_mm: 12.0                   # hard cap; anything larger must not pass
+  min_strut_mm: 1.50                  # round 02 floor, so the knee is not the deflection line
+  min_rim_mm: 1.35
+  max_insert_mm: 18.0                 # search cap through round 02. Chosen knee is 17.9 mm, well under the stated ~100 mm bore.
   max_proud_mm: 2.5
-  max_overhang_deg: 50.0              # flange on the bed, no supports
-  min_thickness_mm: 2.0
-  max_thickness_mm: 3.0
+  max_overhang_deg: 45.0              # flange on the bed, no supports
+  cone_angle_deg: 47.0                # from horizontal; 2° margin so facets stay under 45°
+  film_gap_mm: 2.7                    # capillary length of water; smaller cells do not drain
+  film_full_mm: 4.0                   # full orifice credit
+  opening_floor_mm: 4.0               # round 02: every kept cell is a full drain
+  max_fingertip_disp_mm: 0.5          # constraint, not an objective. Round 00 review.
+  fingertip_N: 10.0
+  hard_push_N: 30.0
+  fillet_mm: 0.50                     # plan fillet on strut corners. v2 lips were 0.60.
 
 objectives:
-  - maximize open area of the grate disc
-  - keep every opening at or under the ball limit
-  - keep struts at or above the printable minimum
-  - print with the flange on the bed and no supports
-  - no flat internal floors or ledges over air; use 45° cones or chamfers
+  drainage: maximize film-weighted orifice flow at a fixed head
+  capture: >
+    maximize (ball limit minus the largest opening), then subtract half
+    the gap between that opening and the median cell
+  volume: reported only, not searched
+  stiffness: constraint only, fingertip deflection at or under 0.5 mm at 10 N
+  grade: cells larger at the center, finer at the rim; the search sets the strength
+  round_03: >
+    No smoothness objective. Junction blend and strut profile are free
+    parameters. Scores are net drainage after corner water, capture,
+    hair snag on tight corners, and plane-stress peak von Mises.
 
-preferred_method: smooth
+reference_smooth_v2:
+  max_ball_mm: 8.6
+  min_strut_mm: 1.8
+  open_area_pct: 50.54
+  volume_mm3: 4304.4
+
+physics:
+  cd: 0.61
+  head_mm: 5.0
+  E_MPa: 2340
+  nu: 0.36
+  flow_proxy_mm3_s: 8.0
+  layer_h_mm: 0.20
+  layer_overhead_s: 1.5
+
+# Voronoi A (printed 2026-11-12) held water in cells near 1 mm.
+# Do not score an opening that small as drainage.
+preferred_method: generative

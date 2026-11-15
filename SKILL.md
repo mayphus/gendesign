@@ -1,23 +1,24 @@
 ---
 name: gendesign
-description: Generative design for a physical part. Requirements, a named method, a measured print. Read models/<name>/SKILL.md. Nothing here starts a print.
+description: Requirements in, AI + algorithms in the middle, a model out. Tests and measurements feed the process, not the requirements. Nothing here starts a print.
 ---
 
 # gendesign
 
-The goal is a working physical object. An agent and the code share one loop. A saved design JSON rebuilds the geometry; the bench decides whether it worked.
+Requirements are the input. AI + algorithms are the process. A model is the output. Feedback from a test, a measurement, or a review goes back into the process. It does not rewrite the requirements.
 
-`models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. Planned methods are in [ROADMAP.md](ROADMAP.md).
+```mermaid
+flowchart LR
+    I[Requirements] --> P[AI + algorithms]
+    P --> O[Model result]
+    O -. feedback: test, measure .-> P
+```
+
+A saved `design.json` rebuilds the geometry. `models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. Planned methods are in [ROADMAP.md](ROADMAP.md).
 
 ## Loop
 
-1. Requirements, with units. Do not invent a fit-critical dimension.
-2. Analysis: loads, flow, or fit — whichever actually decides the part.
-3. Generate / optimize with a named method. Save the winner as `designs/<name>/design.json`.
-4. Printability and a slice estimate. Re-slice for a real time.
-5. Print only after the owner's go.
-6. Physical test. Measure and photograph.
-7. Write `test.md` and feed that result into the next design.
+Requirements, with units. Do not invent a fit-critical dimension. The process analyzes, generates, and checks printability. Save the result as `designs/<name>/design.json`. Print only after the owner's go. After a print, write `test.md`. That note is the next pass of the process, not a change to the requirements.
 
 ## Design rules
 

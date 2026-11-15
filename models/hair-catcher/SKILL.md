@@ -1,26 +1,31 @@
 ---
 name: Basin hair catcher
 description: >-
-  Washbasin drain insert: hair catcher (Voronoi A/B/C) or toy-blocking
-  guard (smooth v2). Read before resizing or searching this model.
+  Washbasin drain insert. AI + generative design: the agent reviews each
+  round, the code searches. Read before resizing or searching this model.
 ---
 
 # Basin hair catcher
 
-Worked example in gendesign. Loop, print rule, and iteration record: [SKILL.md](../../SKILL.md).
+Worked example of AI + generative design. The agent reads the renders and
+the scores and changes the next round. The code computes the grate and
+searches it. Loop and print rule: [SKILL.md](../../SKILL.md).
 
-Press-fit waste insert. Two jobs, two architectures: Voronoi A/B/C catch
-hair; default **smooth v2** lets hair through and blocks an 8.6 mm ball
-(search cap was 12 mm). Do not score a catcher on the toy-ball limit, or
-the bowl on "catch every hair."
+Press-fit waste insert. Voronoi A/B/C and smooth v2 are earlier designs.
+Smooth v2 lets hair through and blocks an 8.6 mm ball. The generative
+round is a cone of Voronoi cells, scored for drainage, capture, stiffness,
+and volume. Do not score a catcher on the toy-ball limit, or the bowl on
+"catch every hair."
 
 ## Measure
 
-Caliper the clear hole (~35 mm De40 here), seat width, clear depth, proud
-height, and the largest object that must not fall in. Collar print OD
-35.10 mm (CAD 35.21, 0.3% PLA shrink). Flange Ø46 × 1.6 mm was **assumed,
-not measured**. v2 is 10.2 mm deep and flush; do not exceed 18 mm without
-a new depth. Deep v3 needs ~35 mm of straight bore, which was not measured.
+The owner confirmed the clear hole at 35 mm on 2026-11-15. Collar print OD
+stays 35.10 mm (CAD 35.21, 0.3% PLA shrink). He also said the straight bore
+is about 100 mm deep. That figure is his estimate, not a caliper log.
+Flange Ø46 × 1.6 mm is still **assumed, not measured**. The chosen
+generative knee inserts 17.9 mm, which is well under that bore. v2 is
+10.2 mm deep. Deep v3 still needs a measured straight bore before anyone
+treats it as a fit.
 Printed collars shrink — confirm a press-fit with a test, not CAD alone.
 Min strut 1.8 mm, min rim 1.2 mm, flange on the bed, overhang ≤ 50°.
 
@@ -37,5 +42,6 @@ Min strut 1.8 mm, min rim 1.2 mm, flange on the bed, overhang ≤ 50°.
 
 ```bash
 python models/hair-catcher/generate.py
-python models/hair-catcher/optimize.py --method smooth --quick   # also: deep, grid, voronoi, topopt
+python models/hair-catcher/optimize.py --method generative --quick
+# one short NSGA-II round. Review iterations/NN/decisions.md before the next.
 ```

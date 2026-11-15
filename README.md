@@ -1,8 +1,17 @@
 # gendesign
 
-Generative design for parts that have to work in the real world. An AI agent and ordinary Python share one loop: requirements, analysis, a method you can rerun, a printability check, a print only when the owner says go, then a measurement that drives the next design.
+Requirements go in. AI + algorithms do the work. A model comes out. A test, a measurement, or a review goes back into that process. It does not rewrite the requirements.
 
-The `gendesign` package is the toolkit (topology optimization, lattices, search, smoothing, evaluation). The parts under `models/` are worked examples of that loop: a basin hair catcher and a drybox adapter. A saved `design.json` rebuilds the geometry. The bench is what finishes the job.
+```mermaid
+flowchart LR
+    I[Requirements] --> P[AI + algorithms]
+    P --> O[Model result]
+    O -. feedback: test, measure .-> P
+```
+
+Requirements are the measured input: units, fit, and what the part has to do. The process is an AI agent reviewing and redirecting, and code that computes and searches. The output is a saved design and a mesh. The bench, a caliper reading, or a look at the renders changes the next pass of that process.
+
+The `gendesign` package is the toolkit (topology optimization, lattices, search, smoothing, evaluation). The parts under `models/` are worked examples: a basin hair catcher and a drybox adapter. A saved `design.json` rebuilds the geometry.
 
 **Nothing in this repo starts a print on its own.** Read [SKILL.md](SKILL.md) for the loop. Read `models/<name>/SKILL.md` before changing an example. Planned solvers are in [ROADMAP.md](ROADMAP.md).
 
@@ -19,13 +28,7 @@ The agent reads the skill, picks a method, and edits code. The method stays insp
 
 ## Loop
 
-1. Requirements, with units. Do not invent a fit-critical dimension.
-2. Analysis: loads, flow, or fit — whichever actually decides the part.
-3. Generate or optimize. Save the winner as `models/<name>/designs/<design>/design.json`.
-4. Printability and a slice estimate. Re-slice for a real time.
-5. Print only after the owner's go.
-6. Physical test. Measure and photograph.
-7. Write `test.md` and feed that result into the next design.
+Requirements stay what was measured. Do not invent a fit-critical dimension, and do not edit them to make a score look better. The AI and the algorithms analyze, generate, and check printability. Save the result as `models/<name>/designs/<design>/design.json`. Print only after the owner's go. Write `test.md` after a print. That note is feedback into the next pass, not a new requirement.
 
 ## Methods
 
@@ -36,9 +39,12 @@ The agent reads the skill, picks a method, and edits code. The method stays insp
 | Plate SIMP on the hair-catcher grate | implemented | [`models/hair-catcher/methods/topopt_plate.py`](models/hair-catcher/methods/topopt_plate.py) |
 | Level-set topology optimization | planned | [ROADMAP.md](ROADMAP.md) |
 | MMA (method of moving asymptotes) | planned | [ROADMAP.md](ROADMAP.md) |
-| Grid, random, genetic algorithm, CMA-ES | implemented | [`gendesign/search.py`](gendesign/search.py) |
+| Grid, random, genetic algorithm, CMA-ES, NSGA-II | implemented | [`gendesign/search.py`](gendesign/search.py) |
+| 2-D orifice drainage estimate | implemented | [`gendesign/flow2d.py`](gendesign/flow2d.py) |
+| Beam-grillage stiffness | implemented | [`gendesign/stiffness.py`](gendesign/stiffness.py) |
 | Bayesian search (Optuna TPE) | implemented, optional | `bayesian_search` in `search.py` (falls back to CMA-ES if Optuna is absent; `pip install -e ".[bayes]"`) |
 | Parametric search on a part | implemented | hair-catcher bowl search, drybox pocket sweep |
+| Hair-catcher generative rounds | in progress | [`models/hair-catcher`](models/hair-catcher/) — AI reviews each round; code searches |
 | General shape / size optimization | planned | [ROADMAP.md](ROADMAP.md) |
 | Voronoi lattices | implemented | `voronoi_lattice` in [`gendesign/lattice.py`](gendesign/lattice.py); hair-catcher A/B/C |
 | TPMS gyroid | implemented | `gendesign gyroid`, [`examples/gyroid_shell`](examples/gyroid_shell/) |
@@ -114,7 +120,7 @@ Search record for smooth v2, and the two method demos:
 
 ## Physical test
 
-A CAD file is a step. After a print the owner asked for, write `test.md` next to the design (or in that iteration folder):
+A CAD file is a step. After a print the owner asked for, write `test.md` next to the design (or in that iteration folder). That file feeds the AI and the algorithms. It is not a rewrite of `requirements.yaml`:
 
 - printed?
 - settings

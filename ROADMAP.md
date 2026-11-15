@@ -12,7 +12,7 @@ Method of moving asymptotes as an update rule beside the optimality-criteria loo
 
 ## Shape and size optimization
 
-A general solver for boundary moves and for dimensions. The hair-catcher bowl search and the drybox pocket sweep are part-specific parametric searches, not this solver.
+A general solver for boundary moves and for dimensions. The hair-catcher bowl search and the drybox pocket sweep are part-specific parametric searches, not this solver. The hair-catcher generative round searches a spacing field with NSGA-II; that field is part-specific too.
 
 ## Implicit / field modeling
 
@@ -24,4 +24,4 @@ Build a part by growing or rewriting a graph (struts, junctions, ports) under ex
 
 ## Multi-physics checks
 
-Flow, heat, and coupled structural checks with the same pass/fail record as a print test. `gendesign/evaluate.py` today reports volume, a min-feature estimate, overhang area, and an optional PrusaSlicer time.
+Flow, heat, and coupled structural checks with the same pass/fail record as a print test. What exists now is a 2-D orifice drainage estimate (`gendesign/flow2d.py`) and a beam grillage (`gendesign/stiffness.py`), used by the hair-catcher search. They rank designs. They are not CFD and not a shell solve. `gendesign/evaluate.py` still reports volume, a min-feature estimate, overhang area, and an optional PrusaSlicer time.
