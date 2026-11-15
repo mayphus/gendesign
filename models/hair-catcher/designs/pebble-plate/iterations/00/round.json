@@ -1,0 +1,502 @@
+{
+  "model": "hair-catcher",
+  "design": "pebble-plate",
+  "round": "00",
+  "date": "2026-11-14",
+  "note": "First round through the shared runner. Start from pebble-e, the flat plate that prints with nothing over air. The generator searches seed, spacing, grade, rib, edge rib and corner rounding. Objectives are drainage (film-discounted orifice flow) and capture (ball margin minus half the max-median gap). Print rules from requirements.yaml are constraints, so edge_rib starts at the 1.35 mm rim floor instead of E's 1.2. Who decided: the AI, from the owner's ask to make gendesign the AI + generative design loop.",
+  "objectives": [
+    "drainage_cm3_s",
+    "capture_mm"
+  ],
+  "config": {
+    "seed": 7,
+    "method": "nsga2",
+    "pop": 16,
+    "gens": 6,
+    "n_each": 5,
+    "generator": "pebble-plate",
+    "evaluators": [
+      "drainage",
+      "capture",
+      "print-rules"
+    ],
+    "bounds": [
+      [
+        0.0,
+        400.0
+      ],
+      [
+        5.6,
+        8.6
+      ],
+      [
+        0.0,
+        0.4
+      ],
+      [
+        1.8,
+        2.6
+      ],
+      [
+        1.35,
+        2.0
+      ],
+      [
+        0.5,
+        0.95
+      ]
+    ],
+    "requirements": "hair-catcher"
+  },
+  "from_round": "models/hair-catcher/designs/pebble-e/design.json",
+  "history": [
+    {
+      "gen": 0,
+      "n_feasible": 8,
+      "front": 3,
+      "best_objectives": [
+        70.11240936881349,
+        6.0125
+      ]
+    },
+    {
+      "gen": 1,
+      "n_feasible": 16,
+      "front": 4,
+      "best_objectives": [
+        75.22348209363345,
+        6.0375
+      ]
+    },
+    {
+      "gen": 2,
+      "n_feasible": 16,
+      "front": 5,
+      "best_objectives": [
+        78.1816410928197,
+        6.0375
+      ]
+    },
+    {
+      "gen": 3,
+      "n_feasible": 16,
+      "front": 7,
+      "best_objectives": [
+        78.47183378706087,
+        6.0375
+      ]
+    },
+    {
+      "gen": 4,
+      "n_feasible": 16,
+      "front": 8,
+      "best_objectives": [
+        79.66387314968097,
+        6.115
+      ]
+    },
+    {
+      "gen": 5,
+      "n_feasible": 16,
+      "front": 11,
+      "best_objectives": [
+        81.22517790746022,
+        6.265
+      ]
+    },
+    {
+      "gen": 6,
+      "n_feasible": 16,
+      "front": 12,
+      "best_objectives": [
+        81.22517790746022,
+        6.265
+      ]
+    }
+  ],
+  "uncertainties": {
+    "drainage": "Orifice model, Cd 0.61, 5.0 mm head. Ranks designs; not a timed drain.",
+    "capture": "Largest inscribed circle stands in for hair capture. No hair test yet.",
+    "stiffness": "Flat 2.2 mm plate; fingertip stiffness is not modeled in this round."
+  },
+  "calibrations": {},
+  "front": [
+    {
+      "x": [
+        388.8374338018623,
+        7.544288058237914,
+        0.026481291058637592,
+        2.232078585261124,
+        1.9493397110836588,
+        0.5102129454842287
+      ],
+      "objectives": [
+        67.74901889970008,
+        6.0125
+      ],
+      "params": {
+        "seed": 389,
+        "spacing": 7.544,
+        "grade": 0.026,
+        "rib": 2.232,
+        "edge_rib": 1.949,
+        "round_frac": 0.51,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        282.04577837136543,
+        7.2738392259230995,
+        0.15996132302693988,
+        2.0010023517687716,
+        1.5785886010650318,
+        0.5943765817475639
+      ],
+      "objectives": [
+        69.55242427725351,
+        5.995000000000001
+      ],
+      "params": {
+        "seed": 282,
+        "spacing": 7.274,
+        "grade": 0.16,
+        "rib": 2.001,
+        "edge_rib": 1.579,
+        "round_frac": 0.594,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        282.04577837136543,
+        7.2738392259230995,
+        0.15015409294421314,
+        2.002823091514274,
+        1.5780682436708586,
+        0.5943765817475639
+      ],
+      "objectives": [
+        69.52069168207713,
+        6.01
+      ],
+      "params": {
+        "seed": 282,
+        "spacing": 7.274,
+        "grade": 0.15,
+        "rib": 2.003,
+        "edge_rib": 1.578,
+        "round_frac": 0.594,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        217.2694007540017,
+        7.304420880765418,
+        0.0007460201935310436,
+        2.037336626125192,
+        1.5334861607334713,
+        0.5016288886717698
+      ],
+      "objectives": [
+        78.86577792706406,
+        5.744999999999999
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.037,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        300.43594962842457,
+        7.344959649809811,
+        0.030062939390824675,
+        1.9596231747484167,
+        1.434921474257884,
+        0.512292716264817
+      ],
+      "objectives": [
+        79.66387314968097,
+        5.4625
+      ],
+      "params": {
+        "seed": 300,
+        "spacing": 7.345,
+        "grade": 0.03,
+        "rib": 1.96,
+        "edge_rib": 1.435,
+        "round_frac": 0.512,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        388.8374338018623,
+        7.4311300977224,
+        0.007548254260925237,
+        2.240636295824995,
+        1.9493397110836588,
+        0.5102129454842287
+      ],
+      "objectives": [
+        67.57057931728426,
+        6.050000000000001
+      ],
+      "params": {
+        "seed": 389,
+        "spacing": 7.431,
+        "grade": 0.008,
+        "rib": 2.241,
+        "edge_rib": 1.949,
+        "round_frac": 0.51,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        2.0382527563243626,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        81.22517790746022,
+        4.809999999999999
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.038,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        211.94473448955088,
+        7.304420880765418,
+        0.01011244487512403,
+        2.058911388791821,
+        1.5651555781595372,
+        0.5016288886717698
+      ],
+      "objectives": [
+        80.60324249152607,
+        5.174999999999999
+      ],
+      "params": {
+        "seed": 212,
+        "spacing": 7.304,
+        "grade": 0.01,
+        "rib": 2.059,
+        "edge_rib": 1.565,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        282.04577837136543,
+        7.2738392259230995,
+        0.14409684823147445,
+        2.228711245371213,
+        1.5804162395307262,
+        0.6468137530089081
+      ],
+      "objectives": [
+        63.87187324758939,
+        6.265
+      ],
+      "params": {
+        "seed": 282,
+        "spacing": 7.274,
+        "grade": 0.144,
+        "rib": 2.229,
+        "edge_rib": 1.58,
+        "round_frac": 0.647,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        217.26464750551108,
+        7.304420880765418,
+        0.0007460201935310436,
+        2.037336626125192,
+        1.5334861607334713,
+        0.5016288886717698
+      ],
+      "objectives": [
+        78.86577792706406,
+        5.744999999999999
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.037,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        217.2694007540017,
+        7.304420880765418,
+        0.0005143884981649157,
+        2.037336626125192,
+        1.5330160882652069,
+        0.5016288886717698
+      ],
+      "objectives": [
+        78.86577792706406,
+        5.744999999999999
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.037,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        281.6438527628358,
+        7.337885724676824,
+        0.15948615428875781,
+        1.9596231747484167,
+        1.4340576475450222,
+        0.5145827487993628
+      ],
+      "objectives": [
+        73.51106153650052,
+        5.98
+      ],
+      "params": {
+        "seed": 282,
+        "spacing": 7.338,
+        "grade": 0.159,
+        "rib": 1.96,
+        "edge_rib": 1.434,
+        "round_frac": 0.515,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    }
+  ],
+  "picks": {
+    "knee": {
+      "x": [
+        217.2694007540017,
+        7.304420880765418,
+        0.0007460201935310436,
+        2.037336626125192,
+        1.5334861607334713,
+        0.5016288886717698
+      ],
+      "objectives": [
+        78.86577792706406,
+        5.744999999999999
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.037,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    "best-drainage": {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        2.0382527563243626,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        81.22517790746022,
+        4.809999999999999
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.038,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    "best-capture": {
+      "x": [
+        282.04577837136543,
+        7.2738392259230995,
+        0.14409684823147445,
+        2.228711245371213,
+        1.5804162395307262,
+        0.6468137530089081
+      ],
+      "objectives": [
+        63.87187324758939,
+        6.265
+      ],
+      "params": {
+        "seed": 282,
+        "spacing": 7.274,
+        "grade": 0.144,
+        "rib": 2.229,
+        "edge_rib": 1.58,
+        "round_frac": 0.647,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "model": "cantilever-bracket",
+  "design": "topopt-bracket",
+  "round": "00",
+  "date": "2026-11-15",
+  "note": "first topopt round: trade volume vs stiffness",
+  "objectives": [
+    "stiffness",
+    "lightness"
+  ],
+  "config": {
+    "seed": 1,
+    "method": "nsga2",
+    "pop": 4,
+    "gens": 2,
+    "n_each": 5,
+    "generator": "topopt-bracket",
+    "evaluators": [
+      "stiffness-mass",
+      "print-support"
+    ],
+    "bounds": [
+      [
+        0.2,
+        0.4
+      ],
+      [
+        2.0,
+        5.0
+      ],
+      [
+        0.3,
+        0.7
+      ]
+    ],
+    "requirements": "cantilever-bracket"
+  },
+  "from_round": null,
+  "history": [
+    {
+      "gen": 0,
+      "n_feasible": 4,
+      "front": 4,
+      "best_objectives": [
+        -301.290798,
+        -0.2256
+      ]
+    },
+    {
+      "gen": 1,
+      "n_feasible": 4,
+      "front": 4,
+      "best_objectives": [
+        -298.071405,
+        -0.2256
+      ]
+    },
+    {
+      "gen": 2,
+      "n_feasible": 4,
+      "front": 4,
+      "best_objectives": [
+        -298.071405,
+        -0.2256
+      ]
+    }
+  ],
+  "uncertainties": {
+    "stiffness-mass": "Compliance from unit-E SIMP FEA; ranks layouts, not physical tip deflection. Yield is not checked.",
+    "print-support": "Flat print: in-plane overhang not binding. Edge-on would use the AM filter."
+  },
+  "calibrations": {},
+  "analysis": {
+    "date": "2026-11-15",
+    "chosen": "2-D SIMP topology",
+    "targets": {
+      "tip_load_N": 50.0,
+      "volfrac_max": 0.4,
+      "min_feature_mm": 2.0,
+      "domain_mm": [
+        120.0,
+        40.0,
+        5.0
+      ]
+    }
+  },
+  "front": [
+    {
+      "x": [
+        0.22559108123501284,
+        4.270669334932301,
+        0.3538143313219278
+      ],
+      "objectives": [
+        -1285.475719,
+        -0.2256
+      ],
+      "params": {
+        "volfrac": 0.2256,
+        "rmin_mm": 4.271,
+        "load_y_frac": 0.3538,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 1285.475719,
+        "volume": 0.2256,
+        "overhang_frac": 0.7692,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        0.3991110340899528,
+        3.120181648830024,
+        0.6303194829291645
+      ],
+      "objectives": [
+        -298.071405,
+        -0.3991
+      ],
+      "params": {
+        "volfrac": 0.3991,
+        "rmin_mm": 3.12,
+        "load_y_frac": 0.6303,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 298.071405,
+        "volume": 0.3991,
+        "overhang_frac": 0.2907,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        0.22559108123501284,
+        2.9370231397100053,
+        0.3518081572608349
+      ],
+      "objectives": [
+        -1285.475719,
+        -0.2256
+      ],
+      "params": {
+        "volfrac": 0.2256,
+        "rmin_mm": 2.937,
+        "load_y_frac": 0.3518,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 1285.475719,
+        "volume": 0.2256,
+        "overhang_frac": 0.7692,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        0.2831803934559433,
+        2.9351648007465485,
+        0.6303194829291645
+      ],
+      "objectives": [
+        -673.174013,
+        -0.2832
+      ],
+      "params": {
+        "volfrac": 0.2832,
+        "rmin_mm": 2.935,
+        "load_y_frac": 0.6303,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 673.174013,
+        "volume": 0.2832,
+        "overhang_frac": 0.617,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    }
+  ],
+  "picks": {
+    "knee": {
+      "x": [
+        0.2831803934559433,
+        2.9351648007465485,
+        0.6303194829291645
+      ],
+      "objectives": [
+        -673.174013,
+        -0.2832
+      ],
+      "params": {
+        "volfrac": 0.2832,
+        "rmin_mm": 2.935,
+        "load_y_frac": 0.6303,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 673.174013,
+        "volume": 0.2832,
+        "overhang_frac": 0.617,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    },
+    "best-stiffness": {
+      "x": [
+        0.3991110340899528,
+        3.120181648830024,
+        0.6303194829291645
+      ],
+      "objectives": [
+        -298.071405,
+        -0.3991
+      ],
+      "params": {
+        "volfrac": 0.3991,
+        "rmin_mm": 3.12,
+        "load_y_frac": 0.6303,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 298.071405,
+        "volume": 0.3991,
+        "overhang_frac": 0.2907,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    },
+    "best-lightness": {
+      "x": [
+        0.22559108123501284,
+        4.270669334932301,
+        0.3538143313219278
+      ],
+      "objectives": [
+        -1285.475719,
+        -0.2256
+      ],
+      "params": {
+        "volfrac": 0.2256,
+        "rmin_mm": 4.271,
+        "load_y_frac": 0.3538,
+        "nelx": 30,
+        "nely": 10,
+        "niter": 20,
+        "rmin_elem": 1.2,
+        "compliance": 1285.475719,
+        "volume": 0.2256,
+        "overhang_frac": 0.7692,
+        "print_flat": true,
+        "L_mm": 120.0,
+        "H_mm": 40.0,
+        "thickness_mm": 5.0
+      },
+      "feasible": true
+    }
+  }
+}

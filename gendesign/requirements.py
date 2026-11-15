@@ -23,10 +23,19 @@ class Requirements:
     raw: dict
     path: str | None = None
     errors: list = field(default_factory=list)
+    calibrations: dict = field(default_factory=dict)
+    analysis: dict = field(default_factory=dict)  # design targets from `gendesign analyze`
 
     @property
     def ok(self) -> bool:
         return not self.errors
+
+    def calibrated(self, key: str, default):
+        """An evaluator setting, corrected by a recorded print test if one exists.
+
+        key is "<evaluator>.<parameter>", as written in a test.md calibrate line.
+        """
+        return self.calibrations.get(key, default)
 
     def section(self, key: str) -> dict:
         value = self.raw.get(key) or {}

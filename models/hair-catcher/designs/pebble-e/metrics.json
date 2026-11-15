@@ -1,0 +1,23 @@
+{
+ "seed": 3,
+ "spacing": 6.8,
+ "n": 15,
+ "inscribed": {
+  "min": 4.53,
+  "median": 4.99,
+  "max": 5.7
+ },
+ "equiv": {
+  "min": 4.94,
+  "median": 5.54,
+  "max": 6.17
+ },
+ "rib_min": 2.0,
+ "rib_median": 2.0,
+ "edge_min": 1.2,
+ "open_mm2": 366,
+ "unsupported": {
+  "total_mm2": 0.0,
+  "worst_layer_mm2": 0.0
+ }
+}

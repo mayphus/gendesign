@@ -1,0 +1,54 @@
+{
+  "targets": {
+    "tip_load_N": {
+      "value": 50.0,
+      "from": "function.tip_load_N",
+      "how": "stated design load at the right edge"
+    },
+    "volfrac_max": {
+      "value": 0.4,
+      "from": "constraints.volfrac_max",
+      "how": "SIMP volume upper bound; gene volfrac searches under this"
+    },
+    "min_feature_mm": {
+      "value": 2.0,
+      "from": "constraints.rmin_mm_min",
+      "how": "density-filter radius sets minimum member width"
+    },
+    "domain_mm": {
+      "value": [
+        120.0,
+        40.0,
+        5.0
+      ],
+      "from": "fit.length/height/thickness_mm",
+      "how": "rectangular design space around two left bolt holes"
+    }
+  },
+  "checks": [
+    "Load 50 N binds the layout; volume \u2264 40% trades mass against stiffness.",
+    "Steel E=200.0 GPa, \u03c3_y\u2248250.0 MPa (yield not constrained in this round).",
+    "Print flat (thickness = build Z): in-plane overhang filter off."
+  ],
+  "concepts": [
+    {
+      "name": "2-D SIMP topology",
+      "verdict": "chosen",
+      "why": "Free material layout inside the rectangle under the bolt BCs and tip load; genes are volfrac, filter radius, and load height."
+    },
+    {
+      "name": "parametric two-bar truss",
+      "verdict": "rejected",
+      "why": "Assumes the load path shape; cannot discover bolt pads or branching members."
+    }
+  ],
+  "chosen": "2-D SIMP topology",
+  "generator": "topopt-bracket",
+  "open_questions": [
+    "Tip load 50 N is a stated design load, not a measured service load.",
+    "Yield 250 MPa is reference only; the round does not constrain stress."
+  ],
+  "date": "2026-11-15",
+  "requirements": "requirements.yaml",
+  "calibrations": {}
+}

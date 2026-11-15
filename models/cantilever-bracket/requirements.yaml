@@ -1,0 +1,46 @@
+name: cantilever-bracket
+units: mm
+purpose: >
+  Thin steel plate bracket: two bolt holes on the left edge carry a downward
+  tip load on the right. Topology optimization finds a light stiff layout
+  inside a rectangular design space. Yield is recorded for reference; the
+  round scores compliance and mass, not stress.
+
+fit:
+  length_mm: 120.0
+  height_mm: 40.0
+  thickness_mm: 5.0
+  bolt_diameter_mm: 8.0
+  bolt_cx_mm: 10.0
+  bolt_cy_mm: [10.0, 30.0]
+  washer_extra_mm: 3.0
+
+constraints:
+  volfrac_max: 0.40
+  volfrac_min: 0.20
+  rmin_mm_min: 2.0
+  rmin_mm_max: 5.0
+  max_overhang_frac: 0.05
+  tip_load_N: 50.0
+
+physics:
+  E_GPa: 200.0
+  nu: 0.3
+  sigma_y_MPa: 250.0
+
+function:
+  tip_load_N: 50.0
+  print_flat: true          # thickness = build Z; no in-plane overhang filter
+  # set print_flat: false to enable the +y self-supporting projection
+
+objectives:
+  stiffness: maximize negative compliance from SIMP FEA
+  lightness: maximize negative volume fraction (lighter is better)
+
+print:
+  material: PLA demo (or laser-cut steel for the real part)
+  note: Print flat so 2-D members need no supports. Edge-on needs overhang filter.
+
+open_questions:
+  - Tip load 50 N is a stated design load, not a measured service load.
+  - Yield 250 MPa is reference only; the round does not constrain stress.

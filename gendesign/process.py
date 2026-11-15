@@ -28,6 +28,7 @@ class Evaluator:
     """evaluate(design) returns objectives, violation, metrics, uncertainties."""
 
     name = "evaluator"
+    objectives: tuple = ()  # names of the objectives this evaluator returns, in order
 
     def evaluate(self, design, requirements) -> dict:
         raise NotImplementedError
@@ -65,6 +66,7 @@ class Result:
     config: dict
     uncertainties: dict = field(default_factory=dict)
     reasons: str = ""
+    history: list = field(default_factory=list)
 
     def save(self, path):
         path = Path(path)
@@ -142,6 +144,7 @@ def run(generator, evaluators, requirements, *, method="nsga2", pop=12, gens=4, 
         config=config,
         uncertainties=uncertainties,
         reasons=reasons,
+        history=list(getattr(found, "history", []) or []),
     )
 
 

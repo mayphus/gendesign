@@ -1,0 +1,16 @@
+{
+  "volfrac": 0.2256,
+  "rmin_mm": 4.271,
+  "load_y_frac": 0.3538,
+  "nelx": 30,
+  "nely": 10,
+  "niter": 20,
+  "rmin_elem": 1.2,
+  "compliance": 1285.475719,
+  "volume": 0.2256,
+  "overhang_frac": 0.7692,
+  "print_flat": true,
+  "L_mm": 120.0,
+  "H_mm": 40.0,
+  "thickness_mm": 5.0
+}

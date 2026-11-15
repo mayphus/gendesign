@@ -1,37 +1,40 @@
 # Architecture
 
-Requirements are measurable input. AI and algorithms are the process. A model is the output. Most feedback corrects the process. A wrong requirement is a separate, rarer path.
+Requirements are measured input. Analysis turns them into targets and picks a concept. Generators and search make candidates inside those targets. The AI reviews; the owner approves; a test corrects the evaluators. A wrong requirement is a separate, rarer path.
 
 ```mermaid
 flowchart LR
-    I[Requirements] --> P[AI + algorithms]
-    P --> O[Model result]
-    O --> Y{Owner picks and says go}
-    Y --> T[Print and test]
-    T -- results correct the models --> P
-    T -. requirement was wrong .-> I
+    R[requirements.yaml] --> A[analyze → analysis.json]
+    A --> G[round: Generator + Evaluators + NSGA-II]
+    G --> D[iterations/NN: picks, renders, decisions.md]
+    D -->|AI review| G
+    D --> O{owner: approve}
+    O --> P[generate → print files] --> T[test.md]
+    T -- feedback.json calibrations --> A
+    T -. requirement flag .-> R
 ```
-
-Form comes from functional evaluators. A fillet radius is a generator parameter, not an objective. If a round junction is better, stress, snag, or corner water has to say so.
 
 ## Interfaces
 
 | Piece | Role | Where |
 |---|---|---|
-| `Requirements` | Load `requirements.yaml` and check the schema. Units and fit stay here. | `gendesign/requirements.py` |
-| `Generator` | `bounds()` and `generate(x)` turn a parameter vector into a design. Topology optimization, Voronoi, lattice, TPMS, or a pocket size all fit. | `gendesign/process.py` |
-| `Evaluator` | `evaluate(design)` returns objectives (all maximized), a constraint violation, metrics, and uncertainties. Pluggable. | `gendesign/process.py` |
-| `Search` | Seeded `run()`. Writes the config it actually used. | `gendesign/process.py` |
-| `Result` | Pareto set, the parameters, reasons as the metrics, uncertainties. STL export stays with the model. | `gendesign/process.py` |
-| `Feedback` | A measurement that corrects an evaluator is a `Calibration`. A measurement that says the input was wrong is a `RequirementFlag`. | `gendesign/process.py` |
-| `IterationLog` | Renders, stats, critique, contact sheet. | `gendesign/iterate.py` |
+| `Requirements` | Loads `requirements.yaml`, checks the schema. Carries `calibrations` (from every `feedback.json`) and `analysis` (targets) into a round. `calibrated(key, default)` is how an evaluator reads a corrected setting. | `gendesign/requirements.py` |
+| `MODEL` | One object per `models/<name>/model.py`: `analyze(req)`, `generator(req)`, `evaluators(req)`, `export(design, out)`, `preview(design, png)`, `default_design`. | each model |
+| analysis | `{targets: {name: {value, from, how}}, checks, concepts: [{name, verdict, why}], chosen, generator, open_questions}` | `gendesign/loop.py: analyze` |
+| `Generator` | `bounds()`, `generate(x, req)`, and `x_from_params(params)` so a saved pick can be rebuilt. | `gendesign/process.py` |
+| `Evaluator` | `evaluate(design, req)` returns objectives (maximized; names in `objectives`), a constraint violation, metrics, uncertainties. | `gendesign/process.py` |
+| Search | Seeded `run()`; NSGA-II by default. The config and per-generation history are part of the result. | `gendesign/process.py`, `gendesign/search.py` |
+| Round | Picks the knee plus the best design per objective, renders, exports with a mesh check, writes `decisions.md` with review sections left for the AI. | `gendesign/loop.py: run_round` |
+| Field | Smooth Booleans, exact polygon fields, marching cubes to a watertight mesh, print orientation, area printed over air. | `gendesign/field.py` |
+| Feedback | `calibrate:` and `requirement:` lines in a `test.md` → `feedback.json`. | `gendesign/loop.py: parse_feedback` |
+| Report | `REPORT.md` per model from the files above. | `gendesign/loop.py: report` |
 
-A model under `models/` supplies one generator and its evaluators. It does not grow a second search loop. Historical scripts (smooth v2, Voronoi A/B/C, legacy C) stay where they are. They are the record, not a second framework.
+A model supplies one analysis, one generator per concept, and its evaluators. It does not grow a second search loop. Scripts that produced earlier designs live in `models/<name>/archive/` as records.
 
-## What a run records
+## What a round records
 
-Seed, method, population, generations, generator name, evaluator names, bounds. The same seed and config rebuild the same front. Uncertainties name what the evaluator does not know (orifice Cd, plane-stress instead of a plate, printed holes running small).
+Seed, method, population, generations, generator and evaluator names, bounds, the per-generation history, the analysis targets in force, the calibrations in force, and the whole front. The same seed, config, analysis and calibrations rebuild the same front.
 
-## Feedback
+## Why analysis first
 
-`Calibration` changes an evaluator setting for the next pass (a film model, a stress scale, a hole undersize). It does not edit `requirements.yaml`. `RequirementFlag` is the rare case: the owner measured a different hole, or a dimension was assumed. That one goes back to requirements, and only the owner changes the file.
+Searching a drawn form ranks it, but does not say whether the form was the right one. The analysis says which requirement binds (for the hair catcher: drainage, 408 mm² open) and which has margin (structure, 1.29x), so the generator spends its freedom where it matters and the concept is chosen for a reason a reviewer can check.

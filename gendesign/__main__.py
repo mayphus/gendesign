@@ -48,8 +48,99 @@ def _cmd_sheet(args):
             print("chart skipped:", e)
 
 
+def _cmd_analyze(args):
+    from .loop import analyze
+
+    a = analyze(args.model)
+    for k, t in a.get("targets", {}).items():
+        print(f"  {k:22s} {t.get('value')}")
+    print("concept:", a.get("chosen"), "| wrote", Path(args.model) / "analysis.md")
+
+
+def _cmd_round(args):
+    from .loop import run_round
+
+    it = run_round(
+        args.model, design=args.design, pop=args.pop, gens=args.gens, seed=args.seed,
+        picks=args.picks, export=not args.no_export, from_round=args.from_round, note=args.note,
+    )
+    print("wrote", it)
+    print("next: the AI reviews picks.png and fills decisions.md; the owner approves a pick.")
+
+
+def _cmd_status(args):
+    import json
+
+    from .loop import status
+
+    s = status(args.model)
+    if args.json:
+        print(json.dumps(s, indent=2))
+        return
+    print(f"{s['model']}: requirements {'ok' if s['requirements_ok'] else s['requirement_errors']}, "
+          f"model.py {'yes' if s['has_model_py'] else 'no'}")
+    for d in s["designs"]:
+        rs = d["rounds"]
+        pending = [r["round"] for r in rs if not r["reviewed"]]
+        approved = [f"{r['round']}/{a}" for r in rs for a in r["approved"]]
+        span = rs[0]['round'] if len(rs) == 1 else f"{rs[0]['round']}–{rs[-1]['round']}" if rs else ""
+        rounds = f"{len(rs)} round{'s' if len(rs) != 1 else ''} ({span})" if rs else ""
+        if pending:
+            rounds += f", review pending: {', '.join(pending)}"
+        if approved:
+            rounds += f", approved: {', '.join(approved)}"
+        tests = f"  tests: {len(d['tests'])}" if d["tests"] else ""
+        print(f"  {d['design']}: {rounds or 'no rounds'}{tests}")
+    if not s.get("analysis"):
+        print("  no analysis.json: run `gendesign analyze` before a round")
+
+
+def _cmd_generate(args):
+    import json
+
+    from .loop import generate
+
+    out, rep = generate(args.model, args.source, args.out)
+    print("wrote", out)
+    print(json.dumps({k: rep[k] for k in ("mesh", "mesh_problems", "genes_outside_bounds")}, indent=1))
+
+
+def _cmd_report(args):
+    from .loop import report
+
+    print("wrote", report(args.model))
+
+
+def _cmd_approve(args):
+    from .loop import approve
+
+    print("recorded", approve(args.iteration, args.pick, note=args.note))
+
+
+def _cmd_feedback(args):
+    import json
+
+    from .loop import record_feedback
+
+    print(json.dumps(record_feedback(args.test_md), indent=2))
+
+
+def _cmd_new(args):
+    import shutil
+
+    src = Path(__file__).resolve().parent.parent / "templates" / "model"
+    dst = Path(args.dest)
+    if dst.exists():
+        raise SystemExit(f"{dst} exists")
+    shutil.copytree(src, dst)
+    for f in dst.rglob("*"):
+        if f.is_file() and f.suffix in {".md", ".py", ".yaml"}:
+            f.write_text(f.read_text().replace("example-model", dst.name))
+    print("created", dst, "- fill requirements.yaml with measured numbers, then model.py")
+
+
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="gendesign", description="Generative-design toolkit")
+    p = argparse.ArgumentParser(prog="gendesign", description="AI + generative design: requirements, analysis, search, review, owner go, test feedback")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     t = sub.add_parser("topopt2d", help="2-D SIMP cantilever (or saved density + STL)")
@@ -93,6 +184,51 @@ def main(argv=None):
     it.add_argument("--title", default=None)
     it.add_argument("--score-key", default="score")
     it.set_defaults(func=_cmd_sheet)
+
+    an = sub.add_parser("analyze", help="requirements -> design targets -> concept (before any geometry)")
+    an.add_argument("model", help="models/<name>/")
+    an.set_defaults(func=_cmd_analyze)
+
+    r = sub.add_parser("round", help="run one search round of a model and write iterations/NN/")
+    r.add_argument("model", help="models/<name>/ (has requirements.yaml and model.py)")
+    r.add_argument("--design", default=None, help="designs/<name>/ to write into (default from model.py)")
+    r.add_argument("--pop", type=int, default=12)
+    r.add_argument("--gens", type=int, default=4)
+    r.add_argument("--seed", type=int, default=0)
+    r.add_argument("--picks", type=int, default=3)
+    r.add_argument("--from", dest="from_round", default=None, help="seed the search with an earlier round (iterations/NN) or a design.json")
+    r.add_argument("--note", default="", help="what changed and why (goes into decisions.md)")
+    r.add_argument("--no-export", action="store_true", help="skip meshing the picks")
+    r.set_defaults(func=_cmd_round)
+
+    st = sub.add_parser("status", help="designs, rounds, review state, approvals and tests of a model")
+    st.add_argument("model")
+    st.add_argument("--json", action="store_true")
+    st.set_defaults(func=_cmd_status)
+
+    gn = sub.add_parser("generate", help="rebuild a pick or saved design to print files through the model")
+    gn.add_argument("model")
+    gn.add_argument("source", help="a pick folder, its params.json, or a design.json")
+    gn.add_argument("-o", "--out", default=None)
+    gn.set_defaults(func=_cmd_generate)
+
+    rp = sub.add_parser("report", help="write models/<name>/REPORT.md for review")
+    rp.add_argument("model")
+    rp.set_defaults(func=_cmd_report)
+
+    ap = sub.add_parser("approve", help="owner only: record the go for one pick of a round")
+    ap.add_argument("iteration", help="designs/<name>/iterations/NN")
+    ap.add_argument("pick")
+    ap.add_argument("--note", default="")
+    ap.set_defaults(func=_cmd_approve)
+
+    fb = sub.add_parser("feedback", help="parse calibrate:/requirement: lines of a test.md into feedback.json")
+    fb.add_argument("test_md")
+    fb.set_defaults(func=_cmd_feedback)
+
+    nw = sub.add_parser("new", help="start a model folder from templates/model")
+    nw.add_argument("dest", help="models/<name>")
+    nw.set_defaults(func=_cmd_new)
 
     args = p.parse_args(argv)
     if getattr(args, "quick", False) and args.cmd == "topopt2d":

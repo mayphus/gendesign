@@ -1,0 +1,10 @@
+{
+  "seed": 397,
+  "spacing": 7.885,
+  "grade": 0.076,
+  "rib": 1.995,
+  "edge_rib": 1.603,
+  "round_frac": 0.596,
+  "plate_t": 2.2,
+  "min_inscribed": 3.5
+}

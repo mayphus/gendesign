@@ -1,12 +1,14 @@
 # (Model name)
 
-Worked example for [gendesign](../../README.md). One paragraph: what the part is, and which saved design is the default.
+Worked example for [gendesign](../../README.md). One paragraph: what the part is and what it must do.
 
-Read [SKILL.md](SKILL.md). The loop is in the root [SKILL.md](../../SKILL.md).
+Review state: [REPORT.md](REPORT.md). Targets and concept: [analysis.md](analysis.md).
 
 ```bash
-python models/<name>/generate.py
-python models/<name>/optimize.py --quick
+gendesign analyze models/<name>      # requirements -> targets -> concept
+gendesign round   models/<name>      # generate + search; writes designs/<design>/iterations/NN
+gendesign report  models/<name>      # REPORT.md for review
+gendesign generate models/<name> designs/<design>/iterations/NN/picks/knee   # print files
 ```
 
-Copy this folder to `models/<name>/`. Save the winner under `designs/<design>/`. After a print the owner asked for, add `test.md`.
+After a print the owner asked for, add `test.md` next to the pick and run `gendesign feedback` on it.

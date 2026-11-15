@@ -1,0 +1,25 @@
+{
+  "name": "pebble-e",
+  "method": "pebble-plate",
+  "status": "not printed; the starting point for rounds in designs/pebble-plate",
+  "params": {
+    "seed": 3,
+    "spacing": 6.8,
+    "grade": 0.15,
+    "rib": 2.0,
+    "edge_rib": 1.2,
+    "round_frac": 0.8,
+    "plate_t": 2.2,
+    "min_inscribed": 3.5
+  },
+  "grid_mm": 0.07,
+  "target_faces": 600000,
+  "summary": "One flat plate, flush with the basin, 15 exact pebble holes 4.5-5.7 mm. Prints top-face-down with nothing over air. Same flange and collar as C and D.",
+  "known_issue": "Edge rib 1.2 mm is under the current min_rim_mm 1.35, so the round runner treats E as just infeasible; rounds search edge_rib from 1.35.",
+  "files": [
+    "metrics.json",
+    "mesh.json",
+    "slice_statistics.json (OrcaSlicer 2.5: 11 min 54 s, 4.12 g, 43 layers)",
+    "preview.png"
+  ]
+}
