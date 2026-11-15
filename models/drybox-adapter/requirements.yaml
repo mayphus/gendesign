@@ -5,6 +5,7 @@ purpose: >
   wall: flared mouth, pocket, 45° cone floor (no flat ledge over air), barbed stem.
 
 constraints:
+  pin_mm: 8.7              # insert across the lands that enter the pocket (calipered, one insert)
   pocket_mm: 8.85          # v9 default; tune to the measured insert
   print_hole_undersize_mm: [0.1, 0.2]   # typical FDM shrinkage of printed holes
   cone_floor_deg: 45

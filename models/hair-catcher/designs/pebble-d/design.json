@@ -1,0 +1,20 @@
+{
+  "name": "pebble-d",
+  "method": "pebble-field",
+  "status": "not printed",
+  "build": {
+    "seed": 41,
+    "top_spacing": 8.2,
+    "bot_spacing": 5.2,
+    "grid_mm": 0.08,
+    "style": "D"
+  },
+  "summary": "Two-level, made self-supporting: funnel walls under every top rib, the fine layer vaulted as arches, teardrop windows through the walls. No free-standing struts.",
+  "known_issue": "Saved metrics: 15 fine cells, smallest 2.8 mm (under the 3.2 mm target and near the 2.7 mm water-film limit), 4.2 mm2 still unsupported. A rebuild of the same seed with the committed build.py gives 14 cells, smallest 3.08 mm, so the saved files came from a slightly different working copy.",
+  "files": [
+    "metrics.json",
+    "mesh.json",
+    "slice_statistics.json",
+    "preview.png"
+  ]
+}

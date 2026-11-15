@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gendesign"
-version = "0.1.0"
-description = "Generative-design toolkit for physical parts: requirements, optimization, and a measured print."
+version = "0.2.0"
+description = "AI + generative design for physical parts: requirements, analysis, search, AI review, owner go, test feedback."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -36,6 +36,7 @@ parts = [
     "pyvista>=0.43",
 ]
 bayes = ["optuna>=3.0"]
+dev = ["pytest>=8"]
 
 [project.scripts]
 gendesign = "gendesign.__main__:main"
@@ -43,6 +44,10 @@ gendesign = "gendesign.__main__:main"
 [project.urls]
 Homepage = "https://github.com/mayphus/gendesign"
 Repository = "https://github.com/mayphus/gendesign"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.setuptools.packages.find]
 include = ["gendesign*"]

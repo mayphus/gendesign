@@ -1,0 +1,15 @@
+{
+ "faces": 399898,
+ "watertight": true,
+ "bodies": 1,
+ "body_faces": [
+  399898
+ ],
+ "volume_mm3": 5962.4,
+ "extents": [
+  46.0,
+  46.0,
+  8.6
+ ],
+ "collar_OD": 35.21
+}

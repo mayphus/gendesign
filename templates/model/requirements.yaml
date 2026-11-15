@@ -1,4 +1,18 @@
 name: example-model
 units: mm
-constraints: {}
-objectives: []
+purpose: >
+  One paragraph: what the part must do, where it goes, how it is made.
+
+function:
+  # What the part must do, as measured numbers. analyze() turns these into targets.
+  # example_flow_cm3_s: 78.0
+
+fit:
+  # Measured interfaces. Mark anything assumed; never invent a fit-critical number.
+  # hole_id_measured_mm: 35.0
+
+constraints:
+  min_wall_mm: 1.2          # print rule
+
+physics:
+  E_MPa: 2340               # PLA

@@ -1,0 +1,20 @@
+{
+  "name": "pebble-c",
+  "method": "pebble-field",
+  "status": "released v0.3.0-C; not printed",
+  "build": {
+    "seed": 135,
+    "top_spacing": 8.2,
+    "bot_spacing": 5.2,
+    "grid_mm": 0.08,
+    "style": "C"
+  },
+  "summary": "Two-level pebble catcher: big rounded cells flush with the basin, branching struts down to a fine layer. The public version C.",
+  "known_issue": "A rebuild with today's overhang check reports ~189 mm2 printed over air (the fine layer bridges between struts). That finding is why D exists.",
+  "files": [
+    "metrics.json",
+    "mesh.json",
+    "slice_statistics.json (OrcaSlicer 2.5, A1 mini approx.)",
+    "preview.png"
+  ]
+}

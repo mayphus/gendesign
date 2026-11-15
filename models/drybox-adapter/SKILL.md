@@ -21,6 +21,10 @@ at the pin size often will not accept it. That is why v9 is 8.85 mm, not
 8.7. On one dryer the insert went straight into the wall hole, so this
 adapter may be unnecessary. Check that before printing coupons.
 
+## Analysis (in `model.py: analyze`)
+
+Pocket target = `constraints.pin_mm` + printed-hole undersize (calibrated by `fit.undersize_mm` once a coupon is measured). The `fit` evaluator scores distance from that target and rejects anything drawn tighter than target − 0.15 mm.
+
 ## Lessons
 
 Parameter sweep only. v9 geometry stays fixed; change P. Try about pin,
@@ -34,8 +38,8 @@ this fit. The bench note is `designs/v9-8.85/test.md`.
 ```bash
 python models/drybox-adapter/generate.py                 # P=8.85
 python models/drybox-adapter/generate.py -P 8.9 -o out/drybox
-python models/drybox-adapter/optimize.py --quick
-python models/drybox-adapter/optimize.py --pockets 8.7 8.8 8.85 8.9
+gendesign analyze models/drybox-adapter
+gendesign round models/drybox-adapter --pop 6 --gens 2
 ```
 
 Section: `docs/v9_section_compare.png`. Saved design: `designs/v9-8.85/design.json`.

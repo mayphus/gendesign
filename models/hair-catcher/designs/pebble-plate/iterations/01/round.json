@@ -1,0 +1,442 @@
+{
+  "model": "hair-catcher",
+  "design": "pebble-plate",
+  "round": "01",
+  "date": "2026-11-14",
+  "note": "Round 00 ran before the analysis stage existed: it searched a drawn form (pebble-e) and only ranked flow. The owner asked for mechanical design order: requirements, then analysis, then the algorithm and the AI decide the form. `gendesign analyze` now derives the targets first (analysis.md): 408 mm\u00b2 open area from the orifice equation for v2-level flow, a 4.0 mm hole floor from the capillary length, a 1.94 mm plate minimum from the 30 N hard push. It screened flat plate, cone and two-level and chose the flat plate, because drainage binds and structure has 1.29x margin. This round makes the flow target a constraint and adds the plate stress and deflection check. It continues from the round 00 picks. Who decided: the owner (order of work), the analysis (concept and targets), the AI (seeding from round 00).",
+  "objectives": [
+    "drainage_cm3_s",
+    "capture_mm"
+  ],
+  "config": {
+    "seed": 11,
+    "method": "nsga2",
+    "pop": 16,
+    "gens": 6,
+    "n_each": 5,
+    "generator": "pebble-plate",
+    "evaluators": [
+      "drainage",
+      "capture",
+      "structure",
+      "print-rules"
+    ],
+    "bounds": [
+      [
+        0.0,
+        400.0
+      ],
+      [
+        5.6,
+        8.6
+      ],
+      [
+        0.0,
+        0.4
+      ],
+      [
+        1.8,
+        2.6
+      ],
+      [
+        1.35,
+        2.0
+      ],
+      [
+        0.5,
+        0.95
+      ]
+    ],
+    "requirements": "hair-catcher"
+  },
+  "from_round": "models/hair-catcher/designs/pebble-plate/iterations/00",
+  "history": [
+    {
+      "gen": 0,
+      "n_feasible": 2,
+      "front": 2,
+      "best_objectives": [
+        81.22517790746022,
+        5.744999999999999
+      ]
+    },
+    {
+      "gen": 1,
+      "n_feasible": 4,
+      "front": 3,
+      "best_objectives": [
+        81.22517790746022,
+        5.744999999999999
+      ]
+    },
+    {
+      "gen": 2,
+      "n_feasible": 6,
+      "front": 3,
+      "best_objectives": [
+        81.22517790746022,
+        5.744999999999999
+      ]
+    },
+    {
+      "gen": 3,
+      "n_feasible": 14,
+      "front": 5,
+      "best_objectives": [
+        82.62497757533724,
+        5.744999999999999
+      ]
+    },
+    {
+      "gen": 4,
+      "n_feasible": 16,
+      "front": 5,
+      "best_objectives": [
+        82.62497757533724,
+        5.755
+      ]
+    },
+    {
+      "gen": 5,
+      "n_feasible": 16,
+      "front": 9,
+      "best_objectives": [
+        82.62497757533724,
+        5.77
+      ]
+    },
+    {
+      "gen": 6,
+      "n_feasible": 16,
+      "front": 9,
+      "best_objectives": [
+        82.62497757533724,
+        5.77
+      ]
+    }
+  ],
+  "uncertainties": {
+    "drainage": "Orifice model, Cd 0.61, 5.0 mm head. Ranks designs; not a timed drain.",
+    "capture": "Largest inscribed circle stands in for hair capture. No hair test yet.",
+    "structure": "Closed-form clamped plate, D scaled by solid fraction\u00b2. Not FEA; ranks and screens.",
+    "stiffness": "Flat 2.2 mm plate; fingertip stiffness is not modeled in this round."
+  },
+  "calibrations": {},
+  "analysis": {
+    "date": "2026-11-14",
+    "chosen": "flat plate",
+    "targets": {
+      "open_area_min_mm2": 408,
+      "open_fraction_min": 0.508,
+      "hole_min_mm": 4.0,
+      "hole_max_mm": 12.0,
+      "plate_t_min_mm": 1.94,
+      "rib_min_mm": 1.5,
+      "rim_min_mm": 1.35
+    }
+  },
+  "front": [
+    {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        2.01171044692533,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        81.68754427323967,
+        4.805
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.012,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        1.9585864486113866,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        82.62497757533724,
+        4.765
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 1.959,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.57151778382502,
+        7.304659266827222,
+        0.0005385452604877598,
+        2.0382527563243626,
+        1.42680854722174,
+        0.5021656547939995
+      ],
+      "objectives": [
+        80.25787829929482,
+        5.755
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.305,
+        "grade": 0.001,
+        "rib": 2.038,
+        "edge_rib": 1.427,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.25465458008944,
+        7.304472266366489,
+        0.0005478047361521191,
+        2.0382527563243626,
+        1.5228722514257271,
+        0.5008462851844839
+      ],
+      "objectives": [
+        81.37545057942026,
+        4.8125
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 2.038,
+        "edge_rib": 1.523,
+        "round_frac": 0.501,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.2940023800062,
+        7.304422930843497,
+        0.0005478047361521191,
+        1.9585864486113866,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        82.62497757533724,
+        4.765
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 1.959,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        217.20014632919515,
+        7.304420880765418,
+        0.0006291221303076342,
+        1.9335710661973675,
+        1.5334861607334713,
+        0.5021499563543111
+      ],
+      "objectives": [
+        80.8059355862801,
+        5.635
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 1.934,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.57151778382502,
+        7.513125533348849,
+        0.0005385452604877598,
+        2.0427656995203423,
+        1.42680854722174,
+        0.5016239844487634
+      ],
+      "objectives": [
+        80.1639006791241,
+        5.77
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.513,
+        "grade": 0.001,
+        "rib": 2.043,
+        "edge_rib": 1.427,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        1.9681853545942138,
+        1.5493858913873635,
+        0.5021656547939995
+      ],
+      "objectives": [
+        82.24711700646468,
+        4.772499999999999
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 1.968,
+        "edge_rib": 1.549,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    {
+      "x": [
+        216.33922466934885,
+        7.304420880765418,
+        0.005440630995732114,
+        1.9219179914765703,
+        1.5334861607334713,
+        0.5021490985192901
+      ],
+      "objectives": [
+        80.98375738496809,
+        5.4799999999999995
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.005,
+        "rib": 1.922,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    }
+  ],
+  "picks": {
+    "knee": {
+      "x": [
+        216.33922466934885,
+        7.304420880765418,
+        0.005440630995732114,
+        1.9219179914765703,
+        1.5334861607334713,
+        0.5021490985192901
+      ],
+      "objectives": [
+        80.98375738496809,
+        5.4799999999999995
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.005,
+        "rib": 1.922,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    "best-drainage": {
+      "x": [
+        216.2940023800062,
+        7.304420880765418,
+        0.0005478047361521191,
+        1.9585864486113866,
+        1.5334861607334713,
+        0.5021656547939995
+      ],
+      "objectives": [
+        82.62497757533724,
+        4.765
+      ],
+      "params": {
+        "seed": 216,
+        "spacing": 7.304,
+        "grade": 0.001,
+        "rib": 1.959,
+        "edge_rib": 1.533,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    },
+    "best-capture": {
+      "x": [
+        216.57151778382502,
+        7.513125533348849,
+        0.0005385452604877598,
+        2.0427656995203423,
+        1.42680854722174,
+        0.5016239844487634
+      ],
+      "objectives": [
+        80.1639006791241,
+        5.77
+      ],
+      "params": {
+        "seed": 217,
+        "spacing": 7.513,
+        "grade": 0.001,
+        "rib": 2.043,
+        "edge_rib": 1.427,
+        "round_frac": 0.502,
+        "plate_t": 2.2,
+        "min_inscribed": 3.5
+      },
+      "feasible": true
+    }
+  }
+}

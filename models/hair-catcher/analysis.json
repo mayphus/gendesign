@@ -1,0 +1,71 @@
+{
+  "targets": {
+    "open_area_min_mm2": {
+      "value": 408,
+      "from": "function.drain_flow_min_cm3_s, physics.cd, physics.head_mm",
+      "how": "A = Q / (Cd sqrt(2 g h)) = 78.0 cm\u00b3/s / (0.61 x 313 mm/s)"
+    },
+    "open_fraction_min": {
+      "value": 0.508,
+      "from": "open_area_min_mm2 / bore area",
+      "how": "408 / 804 mm\u00b2"
+    },
+    "hole_min_mm": {
+      "value": 4.0,
+      "from": "constraints.opening_floor_mm; capillary length",
+      "how": "water holds a film under 2.71 mm (sqrt(sigma / rho g)); full flow from 4.0 mm"
+    },
+    "hole_max_mm": {
+      "value": 12.0,
+      "from": "constraints.max_ball_mm",
+      "how": "hard cap; smaller is better capture"
+    },
+    "plate_t_min_mm": {
+      "value": 1.94,
+      "from": "constraints.fingertip_N, hard_push_N, max_fingertip_disp_mm; physics.E_MPa",
+      "how": "stiffness t >= 1.23 (clamped plate, D x solid\u00b2); strength t >= 1.94 at 30 N, 20 MPa allowable"
+    },
+    "rib_min_mm": {
+      "value": 1.5,
+      "from": "constraints.min_strut_mm",
+      "how": "print rule"
+    },
+    "rim_min_mm": {
+      "value": 1.35,
+      "from": "constraints.min_rim_mm",
+      "how": "print rule"
+    }
+  },
+  "checks": [
+    "At the 2.2 mm plate and 51% open: fingertip deflection 0.088 mm (limit 0.5), hard-push rib stress 15.5 MPa (allowable 20). Structure is close: 1.29x on the tighter of the two, so the plate stays at 2.2 mm (minimum 1.94).",
+    "Drainage binds: 408 mm\u00b2 of open area is 51% of the bore.",
+    "A flat plate with 1.5 mm ribs reaches that with holes of about 5.3 mm inscribed (hexagonal estimate, \u00b115%). A 47.0\u00b0 cone has 1.47x the area, so holes can drop to the 4.0 mm floor."
+  ],
+  "concepts": [
+    {
+      "name": "flat plate",
+      "verdict": "chosen",
+      "why": "Prints top-down with nothing over air and sits flush. Meets the flow target with ~5.3 mm holes; drainage is the active constraint, so the search should spend its freedom on open area, not thickness."
+    },
+    {
+      "name": "cone",
+      "verdict": "fallback",
+      "why": "1.47x the grate area: holes down to the 4.0 mm floor for the same flow. Costs ~18 mm of insert depth and runs the underside at the 45\u00b0 overhang limit. Use it if the owner wants holes under the flat-plate size."
+    },
+    {
+      "name": "two-level",
+      "verdict": "rejected",
+      "why": "The fine layer catches more hair but lowers flow, and it bridges (pebble-c: ~189 mm\u00b2 over air) or needs vaults (pebble-d). Not needed while the flow target is met by one layer."
+    }
+  ],
+  "chosen": "flat plate",
+  "generator": "pebble-plate",
+  "open_questions": [
+    "No tap flow was given. The flow target is smooth v2's 78 cm\u00b3/s under the same orifice model; a measured tap rate should replace it (function.drain_flow_min_cm3_s).",
+    "No largest acceptable hole was given beyond the 12 mm cap. Capture is maximized, not bounded.",
+    "allowable_MPa 20 is a layer-line PLA guess, not a test."
+  ],
+  "date": "2026-11-14",
+  "requirements": "requirements.yaml",
+  "calibrations": {}
+}

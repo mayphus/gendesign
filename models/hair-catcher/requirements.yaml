@@ -1,11 +1,9 @@
 name: hair-catcher
 units: mm
 purpose: >
-  Press-fit washbasin drain insert. AI + generative design: the agent
-  reviews renders and scores and redirects the next round; the code
-  searches a Voronoi density field. Smooth v2 is the hand-tuned
-  reference (struts 1.8 mm, ball 8.6 mm, open area 50.54%, volume
-  4304 mm3), not the search.
+  Press-fit washbasin drain insert that catches hair and lets water through.
+  It sits flush in a measured 35 mm drain hole, prints on an A1 mini in PLA
+  with no supports, and survives a fingertip press and a hard push.
 
 fit:
   drain_id_measured_mm: 35.0          # owner confirmed 2026-11-15
@@ -34,6 +32,11 @@ constraints:
   hard_push_N: 30.0
   fillet_mm: 0.50                     # plan fillet on strut corners. v2 lips were 0.60.
 
+function:
+  # What the part must do, as numbers. `gendesign analyze` turns these into design targets.
+  drain_flow_min_cm3_s: 78.0          # no tap rate measured yet. Reference: smooth v2 under the same orifice model.
+  fingertip_load_N: 10.0              # same as constraints.fingertip_N
+
 objectives:
   drainage: maximize film-weighted orifice flow at a fixed head
   capture: >
@@ -57,6 +60,7 @@ physics:
   cd: 0.61
   head_mm: 5.0
   E_MPa: 2340
+  allowable_MPa: 20.0                 # PLA across layer lines, with margin. A guess, not a coupon test.
   nu: 0.36
   flow_proxy_mm3_s: 8.0
   layer_h_mm: 0.20

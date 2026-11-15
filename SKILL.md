@@ -1,58 +1,40 @@
 ---
 name: gendesign
-description: Requirements in, AI + algorithms in the middle, a model out. Tests and measurements feed the process, not the requirements. Nothing here starts a print.
+description: AI + generative design for a physical part. Requirements, then analysis, then generate and search, then an AI review, the owner's go, a test, and feedback. Use when designing, iterating, or reviewing a part under models/. Nothing here starts a print.
 ---
 
 # gendesign
 
-Requirements are the input. AI + algorithms are the process. A model is the output. Feedback from a test, a measurement, or a review goes back into the process. It does not rewrite the requirements.
+You are the AI in "AI + generative design". The code generates and scores; you decide what each round should test, read the renders, say what the scores miss, and propose the next step. The owner decides what gets printed.
 
-```mermaid
-flowchart LR
-    I[Requirements] --> P[AI + algorithms]
-    P --> O[Model result]
-    O --> Y{Owner picks and says go}
-    Y --> T[Print and test]
-    T -- results correct the models --> P
-    T -. requirement was wrong .-> I
-```
+## Order of work
 
-A saved `design.json` rebuilds the geometry. `models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. The interfaces are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Planned methods are in [ROADMAP.md](ROADMAP.md).
+1. **Requirements.** `models/<name>/requirements.yaml`, measured, with units. Never invent a fit-critical number. If a needed number is missing, use a stated reference and list it as an open question.
+2. **Analysis before geometry.** `gendesign analyze models/<name>`. `analyze()` in `model.py` turns requirements into targets (each with the requirement it came from and the equation), says which requirement binds and which has margin, and screens concepts. The chosen concept picks the generator. Do not start by drawing a shape and scoring it.
+3. **Round.** `gendesign round models/<name> [--from iterations/NN] --note "<what changed and why, who decided>"`. Keep rounds short. A round refuses to run without `analysis.json`.
+4. **Review.** Open `picks.png` and each `picks/<pick>/preview.png`. In `decisions.md`, fill *AI review* and *Proposed next*: compare against the targets, name what the renders show that the scores miss, and do not claim more than the evaluators know.
+5. **Report.** `gendesign report models/<name>` after each review, so `REPORT.md` is current for the owner.
+6. **Owner go.** Only the owner runs `gendesign approve`. Never run it yourself, never send a file to a printer.
+7. **Print files.** `gendesign generate models/<name> <pick>`. The mesh check must say watertight, one body, nothing over air.
+8. **Feedback.** After a print, a `test.md` next to the pick: printed?, settings, measured vs designed, fit/function, photos, failure notes, next change. Put corrections as lines `gendesign feedback` can read:
 
-## Loop
+   ```
+   - calibrate: drainage.cd = 0.55 (predicted 0.61) timed 100 ml through the grate
+   - requirement: fit.flange_diameter_mm — calipered 44.8, the 46 was assumed
+   ```
 
-Requirements, with units. Do not invent a fit-critical dimension. The process generates and evaluates. Save the result as `designs/<name>/design.json`. The owner picks and says go before a print. A `test.md` after a print corrects the evaluators. Only a wrong requirement goes back to `requirements.yaml`.
+   A calibration corrects an evaluator in the next analysis and round. A requirement flag goes to the owner; only the owner edits `requirements.yaml`.
 
-## Design rules
+## Rules for the scores
 
-- No flat internal floors or ledges over air. Use 45° cones or chamfers.
-- Flat face on the bed. No supports unless that model says so.
-- 100% infill on small parts.
-- Never start a print without the owner's go.
-- Each iteration: renders plus a one-line critique. After a print, a `test.md`.
+- A shape preference is not an objective. If a round hole is better, a functional score (stress, snag, corner water) has to say so. If none does, say the model is missing that score.
+- Constraints come from the analysis targets. Objectives are what is left to trade.
+- Every evaluator lists its uncertainties; repeat them in the review.
 
-## Iteration record
+## Print rules
 
-```
-models/<name>/designs/<design>/design.json
-models/<name>/designs/<design>/iterations/NN/
-    params.json  stats.json  critique.md  preview.png  test.md
-```
+Flat face on the bed. No supports unless the model says so. No flat ledge over air (45° cones or chamfers). 100% infill on small parts.
 
-`test.md`: printed?, settings, measured dims vs designed, fit/function, photos, failure notes, next change.
-A design-level `test.md` is fine when the print is not one search round.
-Known records: `models/hair-catcher/designs/voronoi-a/test.md`,
-`models/drybox-adapter/designs/v9-8.85/test.md`.
+## Where things are
 
-## Commands
-
-```bash
-pip install -e .
-pip install -r requirements.txt
-gendesign topopt2d --quick --out out/topopt2d
-python models/hair-catcher/generate.py
-python models/drybox-adapter/generate.py
-python examples/gyroid_shell/run.py
-```
-
-`python -m gendesign` is the same CLI. Version C scripts run from `models/hair-catcher/legacy-C/`. CadQuery generates the guard and the adapter; the `gendesign` commands do not need it.
+`gendesign/loop.py` is the loop. `gendesign/process.py` has `Generator` and `Evaluator`. `gendesign/field.py` builds and meshes signed-distance parts. Each `models/<name>/` has `model.py`, `analysis.md`, `REPORT.md`, `designs/`. Old scripts are under `models/<name>/archive/`; they are records, not a second framework.

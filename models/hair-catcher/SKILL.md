@@ -1,47 +1,32 @@
 ---
 name: Basin hair catcher
 description: >-
-  Washbasin drain insert. AI + generative design: the agent reviews each
-  round, the code searches. Read before resizing or searching this model.
+  Washbasin drain insert, the main gendesign example. Read before analyzing,
+  running a round, or reviewing a pick of this model.
 ---
 
 # Basin hair catcher
 
-Worked example of AI + generative design. The agent reads the renders and
-the scores and changes the next round. The code computes the grate and
-searches it. Loop and print rule: [SKILL.md](../../SKILL.md).
+The loop and its rules: [SKILL.md](../../SKILL.md). Current state: [REPORT.md](REPORT.md).
 
-Press-fit waste insert. Voronoi A/B/C and smooth v2 are earlier designs.
-Smooth v2 lets hair through and blocks an 8.6 mm ball. The generative
-round is a cone of Voronoi cells, scored for drainage, capture, stiffness,
-and volume. Do not score a catcher on the toy-ball limit, or the bowl on
-"catch every hair."
+## Analysis (in `model.py: analyze`)
+
+- Drainage binds: open area from `A = Q / (Cd sqrt(2 g h))`, Q = `function.drain_flow_min_cm3_s`. The 78 cm³/s is smooth v2 under the same model, not a measured tap rate.
+- Hole floor 4.0 mm: water holds a film under the 2.7 mm capillary length (Voronoi A held water in ~1 mm cells).
+- Plate: clamped circular plate, D scaled by solid fraction². Fingertip 10 N ≤ 0.5 mm; hard push 30 N ≤ `physics.allowable_MPa` (20, a guess). Structure is second to bind.
+- Concepts: flat plate (chosen), cone (fallback if holes must go under ~5 mm), two-level (rejected: bridges or vaults, and less flow).
+
+## Evaluators (in `model.py`)
+
+`drainage` (objective, and the flow target as a constraint), `capture` (objective: ball margin minus half the max-median gap), `structure` (constraint), `print-rules` (rib, rim, hole floor). Missing: corner rounding. `gendesign.corners` measures hair snag and corner water; add it before claiming a rounder hole is better.
 
 ## Measure
 
-The owner confirmed the clear hole at 35 mm on 2026-11-15. Collar print OD
-stays 35.10 mm (CAD 35.21, 0.3% PLA shrink). He also said the straight bore
-is about 100 mm deep. That figure is his estimate, not a caliper log.
-Flange Ø46 × 1.6 mm is still **assumed, not measured**. The chosen
-generative knee inserts 17.9 mm, which is well under that bore. v2 is
-10.2 mm deep. Deep v3 still needs a measured straight bore before anyone
-treats it as a fit.
-Printed collars shrink — confirm a press-fit with a test, not CAD alone.
-Min strut 1.8 mm, min rim 1.2 mm, flange on the bed, overhang ≤ 50°.
+Hole 35 mm confirmed. Collar 35.10 mm printed OD. Flange Ø46 × 1.6 mm assumed. Straight bore ~100 mm is the owner's estimate. Printed collars shrink: confirm the press-fit with a test, not CAD.
 
 ## Lessons
 
-- **A** printed 2026-11-12 (`designs/voronoi-a/test.md`): water hung in the small cells and the fine level webbed. Openings ~1–2 mm, some struts < 1.2 mm. That print is why B exists.
-- **B** larger cells: openings ~4.6–7.4 mm, struts ~2 mm, still ~27% straight-through. There is no separate "organic A + B drainage" winner.
-- **C** rounded pebbles and branching struts: best-looking catcher, fine level ~5.6 mm. Scripts, metrics, and preview are in `legacy-C/`; run them from that folder. Still a hair catcher, not a toy guard.
-- **Smooth v2** (default): 50.54% open, 8.6 mm throat, 1.8 mm struts, ~4304 mm³, 45° lead-in, no supports. `generate.py` must stay within ~1% of those stats. Fit-only changes: edit `design.json`, do not re-search.
-- **Deep v3**: ~86% open if the bore is deep enough, harder to clean, look was poor. Only beats v2 under ~27 mm of usable depth. Experimental.
-- Plate SIMP shows load paths on a flat grate. It is not the toy-guard shape.
-
-## Commands
-
-```bash
-python models/hair-catcher/generate.py
-python models/hair-catcher/optimize.py --method generative --quick
-# one short NSGA-II round. Review iterations/NN/decisions.md before the next.
-```
+- **Voronoi A** (printed 2026-11-12): strong hair catch, but water hung in the fine cells. Source of the 4 mm floor.
+- **pebble-c**: the fine layer bridges ~189 mm² over air. **pebble-d** vaults it but pushes fine cells toward 2.8 mm. **pebble-e** drops the second layer: nothing over air.
+- **generative-v1 round 03**: the owner ruled that smoothness is not an objective; rounding must come from a functional score.
+- **pebble-plate rounds 00–01**: with drainage as the only area pressure, `round_frac` sits at its lower bound. The holes go polygonal until a corner score pushes back.

@@ -1,4 +1,4 @@
-"""Shared generative-design tools: topology optimization, lattices, search, evaluation, iteration logs."""
+"""AI + generative design: requirements in, seeded search and evaluators, picks for an AI review and an owner go, test feedback back into the evaluators."""
 
 from .corners import corner_proxies
 from .evaluate import evaluate_mesh, min_feature, overhang_report
@@ -11,6 +11,8 @@ from .iterate import (
     score_chart,
     write_iteration,
 )
+from .field import mesh_field, mx, polygon_field, print_orientation, smax, smin, unsupported_area
+from .loop import approve, load_model, parse_feedback, record_feedback, run_round, select_picks, status
 from .process import (
     Calibration,
     Evaluator,
@@ -32,6 +34,20 @@ from .topopt2d import topopt_2d
 from .topopt3d import topopt_3d
 
 __all__ = [
+    "approve",
+    "load_model",
+    "mesh_field",
+    "mx",
+    "parse_feedback",
+    "polygon_field",
+    "print_orientation",
+    "record_feedback",
+    "run_round",
+    "select_picks",
+    "smax",
+    "smin",
+    "status",
+    "unsupported_area",
     "capillary_length_mm",
     "capillary_transmission",
     "cma_es",
@@ -74,4 +90,4 @@ __all__ = [
     "write_iteration",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

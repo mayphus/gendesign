@@ -1,27 +1,25 @@
 # Roadmap
 
-The `gendesign` package already runs 2-D and 3-D SIMP with an optimality-criteria update, Voronoi and gyroid lattices, grid / random / genetic / CMA-ES search (Optuna TPE when it is installed), mesh smoothing, and printability checks. The methods below are the next general solvers. Part-specific scripts in `models/` are not a substitute for them.
+The loop (requirements → analysis → round → AI review → owner go → test → feedback) is in place. The next work is better analysis and more generators inside it.
 
-## Level-set topology optimization
+## Next for the examples
 
-Evolve the boundary as a level set, instead of only a element-wise SIMP density. The current solvers are `gendesign/topopt2d.py` and `gendesign/topopt3d.py`.
+- **Hair catcher:** add `gendesign.corners` (hair snag, corner water) as an objective, so hole rounding has to compete with drainage (round 00 and 01 reviews). Replace the two assumed targets with a measured tap flow and the largest acceptable hole. Calibrate the 20 MPa allowable with a 30 N press on a coupon.
+- **Drybox adapter:** print the 8.80 / 8.85 / 8.90 coupons and record the undersize with a `calibrate: fit.undersize_mm` line.
 
-## MMA
+## Analysis and evaluation
 
-Method of moving asymptotes as an update rule beside the optimality-criteria loop those solvers use now.
+- **3-D solid FEA** of an exported mesh (tetrahedral linear elasticity) as an evaluator, replacing closed-form plate estimates when a part is close to a limit.
+- **Flow simulation** beyond the orifice model, where drainage binds.
+- Coupled checks with the same pass/fail record as a print test.
 
-## Shape and size optimization
+## Generators
 
-A general solver for boundary moves and for dimensions. The hair-catcher bowl search and the drybox pocket sweep are part-specific parametric searches, not this solver. The hair-catcher generative round searches a spacing field with NSGA-II; that field is part-specific too.
+- **Topology optimization as a round generator.** `topopt2d` and `topopt3d` (SIMP, optimality criteria) run today from the CLI; wire them as a `Generator` whose genes are volume fraction, filter radius and load cases, with an overhang filter for printing.
+- **Level-set** topology optimization and an **MMA** update beside optimality criteria.
+- **Shape and size optimization** as a general solver.
+- **Graph / rule-based generation:** grow struts, junctions and ports under explicit rules, then mesh with `gendesign.field`.
 
-## Implicit / field modeling
+## Surrogates
 
-A shared signed-distance or other field modeler, with meshing and Boolean operations the examples can call. Version C of the hair catcher is a one-off field script in `models/hair-catcher/legacy-C/`.
-
-## Graph and rule-based generation
-
-Build a part by growing or rewriting a graph (struts, junctions, ports) under explicit rules, then mesh the result.
-
-## Multi-physics checks
-
-Flow, heat, and coupled structural checks with the same pass/fail record as a print test. What exists now is a 2-D orifice drainage estimate (`gendesign/flow2d.py`) and a beam grillage (`gendesign/stiffness.py`), used by the hair-catcher search. They rank designs. They are not CFD and not a shell solve. `gendesign/evaluate.py` still reports volume, a min-feature estimate, overhang area, and an optional PrusaSlicer time.
+A learned surrogate of an expensive evaluator, trained on a model's own round history, so larger searches stay cheap. Only after 3-D FEA exists to train it on.

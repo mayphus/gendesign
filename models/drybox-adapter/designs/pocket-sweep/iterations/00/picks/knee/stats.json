@@ -1,0 +1,23 @@
+{
+  "metrics": {
+    "params": {
+      "pocket_mm": 8.861
+    },
+    "pocket_mm": 8.861,
+    "target_mm": 8.85,
+    "feasible": true,
+    "objectives": [
+      -0.011000000000001009
+    ],
+    "violation": 0.0
+  },
+  "mesh": {
+    "files": {
+      "stl": "/Users/mayphus/workspace/gendesign/models/drybox-adapter/designs/pocket-sweep/iterations/00/picks/knee/drybox_adapter_v9_8.861.stl",
+      "step": "/Users/mayphus/workspace/gendesign/models/drybox-adapter/designs/pocket-sweep/iterations/00/picks/knee/drybox_adapter_v9_8.861.step"
+    },
+    "volume_mm3": 1651.1,
+    "pocket_mm": 8.861,
+    "note": "Printed holes come out ~0.1\u20130.2 mm undersized. Measure and test-fit."
+  }
+}
