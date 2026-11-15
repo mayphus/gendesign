@@ -131,6 +131,48 @@ The knee is the candidate. Flow is 4% above the target, capture is close to roun
 
 Pending. Only the owner records this: `gendesign approve <this folder> <pick>`. Nothing is printed before that.
 
+### pebble-plate / round 02 — reviewed, awaiting owner
+
+2026-11-14 · nsga2 pop 24 × 8 gens, seed 23 · front 4 · [decisions](designs/pebble-plate/iterations/02/decisions.md)
+
+![round 02 picks](designs/pebble-plate/iterations/02/picks.png)
+
+| Pick | drainage_cm3_s | capture_mm |
+|---|---:|---:|
+| knee | 84.7 | 1.69 |
+| best-drainage | 85.1 | 1.68 |
+| best-capture | 79.5 | 4.65 |
+
+#### AI review of the renders and the scores
+
+Both questions from round 01 have an answer.
+
+**Corners: settled by function.** Every pick passes the new corners constraint with zero hair snag and zero corner water; the tightest corner is 1.49–2.12 mm. The search moved round_frac to 0.60–0.62 here without being asked, because the corner score is a constraint, not a reward. Rounding is no longer an open gap.
+
+**Is round 01's layout a local pick? No, it is the better one.** A cold search twice as large (24 × 8, 192 evaluations) found a sparse front: 4 designs, and none feasible in the first two generations. The flow target leaves a narrow feasible region and the integer layout seed makes it rugged. Across rounds 01 and 02 (same targets), the combined front is:
+
+| Source | Holes | Ball range | Open area | Flow | Capture | Hard push |
+|---|---:|---:|---:|---:|---:|---:|
+| round 01 best-capture (seed 217) | 11 | 5.31–6.11 mm | 420 mm² | 80.2 cm³/s | 5.77 | 16.0 MPa |
+| **round 01 knee (seed 216)** | 11 | 5.15–6.32 mm | 424 mm² | 81.0 cm³/s | 5.48 | 16.2 MPa |
+| round 02 knee (seed 178) | 8 | 6.88–9.33 mm | 443 mm² | 84.7 cm³/s | 1.69 | 17.0 MPa |
+| round 02 best-capture (seed 397) | 10 | 5.01–6.98 mm | 416 mm² | 79.5 cm³/s | 4.65 | 15.8 MPa |
+
+Round 02's best-capture is dominated by round 01's knee on both objectives. Round 02's knee is a different product: 4.6% more flow for holes as big as smooth v2's 8.6 mm ball. With a 4-point front, the "knee" rule picked an end of a gap, not a balance. That is a limit of knee selection on a sparse front, not a recommendation.
+
+**The candidate stays round 01's knee**: 11 holes, 5.2–6.3 mm, 81 cm³/s (4% over target), 16.2 of 20 MPa, corners 1.29 mm (rounder than both proxy radii), watertight, nothing over air.
+
+#### Proposed next
+
+1. Owner: the round 01 knee is ready for your decision. If you want it printed, run `gendesign approve models/hair-catcher/designs/pebble-plate/iterations/01 knee`, then `gendesign generate` it. The AI will not approve.
+2. Before or with that print: caliper the flange seat (Ø46 is assumed), and if you can, give the tap flow rate and the largest hole you would accept. Those two replace the assumed targets in `analysis.md`.
+3. After the print: time a litre through it and press it at 30 N. Write both as `calibrate:` lines (`drainage.cd`, `structure.allowable_MPa`) in its test.md.
+4. Search: treat the layout seed as a discrete choice (multi-start over seeds, continuous genes per seed) so a cold round does not depend on luck. Only worth it if the owner wants another round before printing.
+
+#### Owner decision
+
+Pending. Only the owner records this: `gendesign approve <this folder> <pick>`. Nothing is printed before that.
+
 ## Records
 
 Designs kept as history. Each folder has its own design.json and, if printed, test.md.
@@ -142,7 +184,7 @@ Designs kept as history. Each folder has its own design.json and, if printed, te
 | [pebble-c](designs/pebble-c/) | <img src="designs/pebble-c/preview.png" width="140"> | 0 | — |
 | [pebble-d](designs/pebble-d/) | <img src="designs/pebble-d/preview.png" width="140"> | 0 | — |
 | [pebble-e](designs/pebble-e/) | <img src="designs/pebble-e/preview.png" width="140"> | 0 | — |
-| [pebble-plate](designs/pebble-plate/) | <img src="designs/pebble-plate/iterations/01/picks/knee/preview.png" width="140"> | 2 | — |
+| [pebble-plate](designs/pebble-plate/) | <img src="designs/pebble-plate/iterations/02/picks/knee/preview.png" width="140"> | 3 | — |
 | [smooth-v2](designs/smooth-v2/) | <img src="designs/smooth-v2/preview-top.png" width="140"> | 13 | — |
 | [voronoi-a](designs/voronoi-a/) | <img src="designs/voronoi-a/preview-top.png" width="140"> | 0 | [voronoi-a](designs/voronoi-a/test.md) |
 | [voronoi-b](designs/voronoi-b/) | <img src="designs/voronoi-b/preview-top.png" width="140"> | 0 | — |

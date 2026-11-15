@@ -4,7 +4,8 @@ The loop (requirements → analysis → round → AI review → owner go → tes
 
 ## Next for the examples
 
-- **Hair catcher:** add `gendesign.corners` (hair snag, corner water) as an objective, so hole rounding has to compete with drainage (round 00 and 01 reviews). Replace the two assumed targets with a measured tap flow and the largest acceptable hole. Calibrate the 20 MPa allowable with a 30 N press on a coupon.
+- **Hair catcher:** owner's go on the round 01 knee, then a print, a timed litre and a 30 N press as `calibrate:` lines. Replace the two assumed targets with a measured tap flow and the largest acceptable hole.
+- **Search:** treat an integer layout seed as a discrete choice (multi-start over seeds, continuous genes per seed); a cold round 02 found no feasible design in its first two generations.
 
 ## Analysis and evaluation
 

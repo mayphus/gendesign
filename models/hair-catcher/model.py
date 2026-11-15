@@ -385,6 +385,30 @@ class Structure(Evaluator):
         }
 
 
+class Corners(Evaluator):
+    """Hair snag and corner water, measured on the hole outlines (gendesign.corners).
+
+    A constraint, not an objective: once every corner is rounder than the
+    hook and meniscus radii, extra rounding buys nothing for hair or water.
+    """
+
+    name = "corners"
+    objectives = ()
+
+    def evaluate(self, design, req):
+        from gendesign.corners import corner_proxies
+
+        rings = [np.asarray(h.exterior.coords)[:-1] for h in design["holes"]]
+        c = corner_proxies(rings, hook_radius_mm=0.5, meniscus_radius_mm=0.7)
+        return {
+            "objectives": [],
+            "violation": c["snag"] + c["retained_mm2"],
+            "metrics": {"tightest_corner_mm": round(c["tightest_radius_mm"], 2), "snag": c["snag"],
+                        "corner_water_mm2": c["retained_mm2"]},
+            "uncertainties": {"corners": "Hook 0.5 mm and meniscus 0.7 mm radii are proxies, not a hair or water test."},
+        }
+
+
 class PrintRules(Evaluator):
     """Hard limits from requirements.yaml: rib, rim, opening floor, hole count."""
 
@@ -436,7 +460,7 @@ class HairCatcher:
         return PebblePlate()
 
     def evaluators(self, req):
-        return [Drainage(), Capture(), Structure(), PrintRules()]
+        return [Drainage(), Capture(), Structure(), Corners(), PrintRules()]
 
     def analyze(self, req):
         return analyze(req)

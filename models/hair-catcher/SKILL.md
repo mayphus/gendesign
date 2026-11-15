@@ -18,7 +18,9 @@ The loop and its rules: [SKILL.md](../../SKILL.md). Current state: [REPORT.md](R
 
 ## Evaluators (in `model.py`)
 
-`drainage` (objective, and the flow target as a constraint), `capture` (objective: ball margin minus half the max-median gap), `structure` (constraint), `print-rules` (rib, rim, hole floor). Missing: corner rounding. `gendesign.corners` measures hair snag and corner water; add it before claiming a rounder hole is better.
+`drainage` (objective, and the flow target as a constraint), `capture` (objective: ball margin minus half the max-median gap), `structure` (constraint), `corners` (constraint: hair snag and corner water from `gendesign.corners`), `print-rules` (rib, rim, hole floor).
+
+Corner rounding is settled by function, not taste: the pebble openings keep every corner at least 1.29 mm, rounder than the 0.5 mm hook and 0.7 mm meniscus radii, so snag and corner water are zero. Rounder holes only cost open area (round_frac 0.95 drops the knee to 334 mm², under the 408 mm² target).
 
 ## Measure
 
@@ -29,4 +31,4 @@ Hole 35 mm confirmed. Collar 35.10 mm printed OD. Flange Ø46 × 1.6 mm assumed.
 - **Voronoi A** (printed 2026-11-12): strong hair catch, but water hung in the fine cells. Source of the 4 mm floor.
 - **pebble-c**: the fine layer bridges ~189 mm² over air. **pebble-d** vaults it but pushes fine cells toward 2.8 mm. **pebble-e** drops the second layer: nothing over air.
 - **generative-v1 round 03**: the owner ruled that smoothness is not an objective; rounding must come from a functional score.
-- **pebble-plate rounds 00–01**: with drainage as the only area pressure, `round_frac` sits at its lower bound. The holes go polygonal until a corner score pushes back.
+- **pebble-plate rounds 00–01**: `round_frac` sits at its lower bound. Round 02 checked why: corners are already past the hook and meniscus radii, so nothing functional pushes back, and that is the right answer.

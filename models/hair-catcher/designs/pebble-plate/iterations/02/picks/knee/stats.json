@@ -1,0 +1,53 @@
+{
+  "metrics": {
+    "params": {
+      "seed": 178,
+      "spacing": 8.315,
+      "grade": 0.033,
+      "rib": 2.08,
+      "edge_rib": 1.517,
+      "round_frac": 0.616,
+      "plate_t": 2.2,
+      "min_inscribed": 3.5
+    },
+    "flow_cm3_s": 84.7,
+    "open_pct": 55.1,
+    "holes": 8,
+    "open_mm2": 443,
+    "open_area_target_mm2": 408.0,
+    "max_ball_mm": 9.33,
+    "median_ball_mm": 7.37,
+    "min_ball_mm": 6.88,
+    "fingertip_mm": 0.106,
+    "hard_push_MPa": 17.0,
+    "tightest_corner_mm": 2.12,
+    "snag": 0.0,
+    "corner_water_mm2": 0.0,
+    "rib_min_mm": 2.08,
+    "edge_min_mm": 1.52,
+    "feasible": true,
+    "objectives": [
+      84.66234988358559,
+      1.69
+    ],
+    "violation": 0.0
+  },
+  "mesh": {
+    "faces": 299998,
+    "watertight": true,
+    "bodies": 1,
+    "volume_mm3": 3291.6,
+    "extents": [
+      46.0,
+      46.0,
+      8.6
+    ],
+    "collar_OD": 35.21,
+    "collar_ID": 31.996,
+    "grid_mm": 0.1,
+    "unsupported": {
+      "total_mm2": 0.0,
+      "worst_layer_mm2": 0.0
+    }
+  }
+}
