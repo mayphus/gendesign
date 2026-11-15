@@ -42,6 +42,10 @@ objectives:
   volume: reported only, not searched
   stiffness: constraint only, fingertip deflection at or under 0.5 mm at 10 N
   grade: cells larger at the center, finer at the rim; the search sets the strength
+  round_03: >
+    No smoothness objective. Junction blend and strut profile are free
+    parameters. Scores are net drainage after corner water, capture,
+    hair snag on tight corners, and plane-stress peak von Mises.
 
 reference_smooth_v2:
   max_ball_mm: 8.6

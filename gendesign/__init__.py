@@ -1,5 +1,6 @@
 """Shared generative-design tools: topology optimization, lattices, search, evaluation, iteration logs."""
 
+from .corners import corner_proxies
 from .evaluate import evaluate_mesh, min_feature, overhang_report
 from .flow2d import capillary_length_mm, capillary_transmission, drainage_report, orifice_flow
 from .iterate import (
@@ -12,6 +13,7 @@ from .iterate import (
 from .lattice import gyroid_mesh, voronoi_lattice
 from .search import cma_es, genetic_minimize, grid_search, nsga2, pareto_front, random_search
 from .stiffness import grillage_deflection, section_properties
+from .stress2d import plane_stress_peak
 from .topopt2d import topopt_2d
 from .topopt3d import topopt_3d
 
@@ -20,6 +22,7 @@ __all__ = [
     "capillary_transmission",
     "cma_es",
     "contact_sheet",
+    "corner_proxies",
     "drainage_report",
     "evaluate_mesh",
     "evolution_gif",
@@ -33,6 +36,7 @@ __all__ = [
     "orifice_flow",
     "overhang_report",
     "pareto_front",
+    "plane_stress_peak",
     "random_search",
     "score_chart",
     "section_properties",

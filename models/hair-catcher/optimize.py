@@ -39,9 +39,14 @@ def load_req(path: Path) -> dict:
 
 
 def _run_generative(req, out: Path, quick: bool, round_index: str):
+    if str(round_index) == "03":
+        import gen_round03
+
+        pop, gens = (8, 2) if quick else (12, 4)
+        return gen_round03.run_round(req, out, pop=pop, gens=gens)
     import gen_search
 
-    # Round 02: two objectives, pinned center-open grade. --quick stays a smoke test.
+    # Rounds 00–02. --quick stays a smoke test.
     pop, gens = (8, 2) if quick else (28, 10)
     return gen_search.run_round(req, out, pop=pop, gens=gens, seed=11, round_index=round_index)
 
