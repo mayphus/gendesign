@@ -73,7 +73,9 @@ def fit_from_requirements(req: dict) -> dict:
         "cone_deg": float(rules.get("cone_angle_deg", 47.0)),
         "film_gap": float(rules.get("film_gap_mm", 2.7)),
         "film_full": float(rules.get("film_full_mm", 4.0)),
-        "max_disp": float(rules.get("max_fingertip_disp_mm", 1.5)),
+        "max_disp": float(rules.get("max_fingertip_disp_mm", 0.5)),
+        "fillet_mm": float(rules.get("fillet_mm", phys.get("fillet_mm", 0.50))),
+        "cell_gap_weight": float(phys.get("cell_gap_weight", 0.5)),
         "finger_N": float(rules.get("fingertip_N", phys.get("fingertip_N", 10.0))),
         "push_N": float(rules.get("hard_push_N", phys.get("hard_push_N", 30.0))),
         "head_mm": float(phys.get("head_mm", 5.0)),
@@ -121,8 +123,22 @@ def print_height(fit, thickness) -> float:
     return float(fit["flange_t"] - z_bot(0.0, fit, thickness))
 
 
+def _density_weight(xy, d, R):
+    """Seed density. exponent 0.5 is uniform area; higher packs the center."""
+    r = np.hypot(xy[..., 0], xy[..., 1])
+    th = np.arctan2(xy[..., 1], xy[..., 0])
+    rn = np.clip(r / max(R, 1e-6), 0.0, 1.0)
+    radial = (rn + 0.08) ** (1.0 - 2.0 * float(d["exponent"]))
+    angular = 1.0 + float(d["harm"]) * np.cos(3.0 * th)
+    return np.clip(radial * angular, 0.15, None)
+
+
 def place_seeds(d, fit) -> np.ndarray:
-    """Phyllotaxis warped by the radial density exponent and a 3-fold term."""
+    """Graded spiral, then density-weighted Lloyd so cell size follows the field.
+
+    The exponent is the radial grade: above 0.5 the center is finer, below
+    0.5 the rim is finer. Lloyd stops the last ring from leaving one huge cell.
+    """
     n = int(d["n_seeds"])
     golden = math.pi * (3.0 - math.sqrt(5.0))
     R = fit["r_in"] - fit["rim"] - 0.3
@@ -132,11 +148,41 @@ def place_seeds(d, fit) -> np.ndarray:
         r = R * (u ** d["exponent"])
         th = d["phase"] + i * golden
         r *= 1.0 + d["harm"] * math.cos(3.0 * th)
-        th = th + d["jitter"] * 0.55 * math.sin(1.7 * i + d["phase"])
+        th = th + d["jitter"] * 0.35 * math.sin(1.7 * i + d["phase"])
         r = float(np.clip(r, 0.0, R))
         pts.append((r * math.cos(th), r * math.sin(th)))
-    min_sep = d["strut"] + 0.90 * fit["film_gap"]
-    return _separate(np.asarray(pts, dtype=float), min_sep, R)
+    min_sep = d["strut"] + 0.85 * fit["film_gap"]
+    seeds = _separate(np.asarray(pts, dtype=float), min_sep, R)
+    return _lloyd(seeds, d, R, min_sep)
+
+
+def _lloyd(seeds, d, R, min_sep, steps=5):
+    """Move each seed to the density-weighted centroid of its cell."""
+    seeds = np.asarray(seeds, dtype=float)
+    if len(seeds) < 2:
+        return seeds
+    m = 640
+    u = (np.arange(m) + 0.5) / m
+    rad = R * np.sqrt(u)
+    ang = np.arange(m) * math.pi * (3.0 - math.sqrt(5.0))
+    samples = np.stack([rad * np.cos(ang), rad * np.sin(ang)], axis=1)
+    weight = _density_weight(samples, d, R)
+    for _ in range(steps):
+        delta = samples[:, None, :] - seeds[None, :, :]
+        assign = np.einsum("ijk,ijk->ij", delta, delta).argmin(axis=1)
+        new = seeds.copy()
+        for i in range(len(seeds)):
+            mask = assign == i
+            if int(mask.sum()) < 3:
+                continue
+            w = weight[mask]
+            new[i, 0] = np.average(samples[mask, 0], weights=w)
+            new[i, 1] = np.average(samples[mask, 1], weights=w)
+        rad_s = np.hypot(new[:, 0], new[:, 1])
+        over = rad_s > R
+        new[over] *= (R / rad_s[over])[:, None]
+        seeds = new
+    return _separate(seeds, min_sep * 0.92, R)
 
 
 def _separate(seeds, min_sep, R):
@@ -188,7 +234,84 @@ def opening_polygons(seeds, d, fit):
         for g in pieces:
             if g.area >= 0.8:
                 holes.append(g.buffer(0))
-    return holes
+    return round_openings(holes, fit)
+
+
+def _pieces(geom):
+    if geom is None or geom.is_empty:
+        return []
+    kind = geom.geom_type
+    if kind == "Polygon":
+        return [geom]
+    if kind == "MultiPolygon":
+        return [g for g in geom.geoms if not g.is_empty]
+    if kind == "GeometryCollection":
+        out = []
+        for g in geom.geoms:
+            out.extend(_pieces(g))
+        return out
+    return []
+
+
+def _drains(holes, film_gap):
+    """Drop openings whose inscribed circle is below the water-film gap."""
+    kept = []
+    limit = float(film_gap) / 2.0
+    for h in holes:
+        for g in _pieces(h):
+            if g.area < 1.0:
+                continue
+            # Empty negative buffer means no circle of this radius fits.
+            if g.buffer(-limit).is_empty:
+                continue
+            kept.append(g)
+    return kept
+
+
+def round_openings(holes, fit, quad_segs=4):
+    """Fillet strut corners in plan, then drop anything still under the film gap.
+
+    Morphological closing (expand, then shrink, round joins) rounds the
+    corners that stick into a cell. The radius stays under half the minimum
+    strut, so a wall is not eaten through. The result is still the same cone:
+    no new horizontal ledge.
+    """
+    from shapely.geometry import Point
+    from shapely.ops import unary_union
+
+    R = fit["r_in"] - fit["rim"]
+    inner = Point(0.0, 0.0).buffer(R, quad_segs=12)
+    holes = _drains(holes, fit["film_gap"])
+    if not holes:
+        return []
+    void = unary_union(holes).intersection(inner)
+    solid = inner.difference(void)
+    radius = min(float(fit.get("fillet_mm", 0.50)), 0.55)
+    if radius > 0.08 and not solid.is_empty:
+        solid = solid.buffer(radius, join_style=1, quad_segs=quad_segs)
+        solid = solid.buffer(-radius, join_style=1, quad_segs=quad_segs)
+        solid = solid.intersection(inner)
+    void2 = inner.difference(solid)
+    return _drains(_pieces(void2), fit["film_gap"])
+
+
+def _drop_specks(void, pitch, min_area_mm2=1.5):
+    """Forget raster crumbs. A real opening is at least a couple of mm²."""
+    from skimage.measure import label
+
+    void = np.asarray(void, dtype=bool)
+    lab = label(void, connectivity=1)
+    if lab.max() == 0:
+        return void
+    counts = np.bincount(lab.ravel())
+    min_px = max(2, int(min_area_mm2 / (pitch * pitch)))
+    small = np.where(counts < min_px)[0]
+    small = small[small != 0]
+    if len(small) == 0:
+        return void
+    out = void.copy()
+    out[np.isin(lab, small)] = False
+    return out
 
 
 def rasterize(holes, fit, pitch: float):
@@ -335,6 +458,7 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
         seeds = place_seeds(d, fit)
     holes = opening_polygons(seeds, d, fit)
     void, domain, _xs = rasterize(holes, fit, pitch)
+    void = _drop_specks(void, pitch)
     flow = drainage_report(
         void, domain, pitch,
         head_mm=fit["head_mm"], cd=fit["cd"],
@@ -343,6 +467,9 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
     nodes, edges, widths, fixed = ridge_graph(seeds, d, fit)
     # Drop cells from the flow dict before it lands in JSON later; keep a short copy.
     cells = flow.pop("cells")
+    dias = [float(c["inscribed_d_mm"]) for c in cells if float(c["inscribed_d_mm"]) >= fit["film_gap"] - 0.05]
+    median_ball = float(np.median(dias)) if dias else 0.0
+    cell_gap = max(0.0, float(flow["max_ball_mm"]) - median_ball)
     stiff = grillage_deflection(
         nodes, edges, widths, d["thickness"],
         E=fit["E"], nu=fit["nu"], load_N=fit["finger_N"],
@@ -364,6 +491,10 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
     if flow["n_openings"] < 1 or flow["max_ball_mm"] < fit["film_gap"]:
         # No opening large enough to break a water film.
         violation += fit["film_gap"] - flow["max_ball_mm"] + 0.5
+    # Openings under the film gap are filled before this score. A remaining
+    # film area means the fill missed a crack; that design is not a pick.
+    if flow["film_area_mm2"] > 3.0:
+        violation += 1.0 + flow["film_area_mm2"] / 10.0
     if not stiff["connected"]:
         violation += 8.0
     elif stiff["max_disp_mm"] > fit["max_disp"]:
@@ -373,13 +504,21 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
     if d["strut"] < fit["min_strut"] - 1e-6:
         violation += fit["min_strut"] - d["strut"]
 
-    capture = fit["max_ball"] - flow["max_ball_mm"]
+    # Capture is how far the largest ball sits under the limit. The gap
+    # between that ball and the median cell is a penalty, so one rim cell
+    # cannot set the score while the center is a different grate.
+    capture_raw = fit["max_ball"] - flow["max_ball_mm"]
+    capture = capture_raw - float(fit.get("cell_gap_weight", 0.5)) * cell_gap
     k = float(stiff["stiffness_N_per_mm"]) if stiff["connected"] and math.isfinite(stiff["max_disp_mm"]) else 0.0
-    objectives = [float(flow["flow_mm3_s"]), float(capture), float(k), float(-volume)]
+    # Stiffness is a constraint (see violation), not an objective.
+    objectives = [float(flow["flow_mm3_s"]), float(capture), float(-volume)]
     info = {
         "flow_mm3_s": flow["flow_mm3_s"],
         "flow_cm3_s": flow["flow_cm3_s"],
         "capture_mm": capture,
+        "capture_raw_mm": capture_raw,
+        "median_ball_mm": median_ball,
+        "cell_gap_mm": cell_gap,
         "stiffness_N_per_mm": k,
         "volume_mm3": volume,
         "grate_volume_mm3": grate_vol,
@@ -430,13 +569,33 @@ def evaluate_vector(x, fit, pitch=0.16) -> dict:
     try:
         ev = evaluate_design(d, fit, pitch=pitch)
     except Exception as exc:
-        return {"objectives": [-1e6, -1e6, -1e6, -1e9], "violation": 100.0, "info": {"error": str(exc), "feasible": False}}
+        return {"objectives": [-1e6, -1e6, -1e9], "violation": 100.0, "info": {"error": str(exc), "feasible": False}}
     return {"objectives": ev["objectives"], "violation": ev["violation"], "info": ev["info"]}
 
 
 def _signed_area(xy) -> float:
     x, y = xy[:, 0], xy[:, 1]
     return float(0.5 * np.sum(x * np.roll(y, -1) - np.roll(x, -1) * y))
+
+
+def _clean_ring(coords, tol=0.05):
+    """Drop the closing repeat and any near-duplicate vertices.
+
+    A zero-length edge makes earcut skip a boundary edge, and the wall
+    then no longer matches the cap.
+    """
+    coords = np.asarray(coords, dtype=float)
+    if len(coords) > 1 and float(np.linalg.norm(coords[0] - coords[-1])) <= tol:
+        coords = coords[:-1]
+    if len(coords) == 0:
+        return coords
+    keep = [coords[0]]
+    for p in coords[1:]:
+        if float(np.linalg.norm(p - keep[-1])) >= tol:
+            keep.append(p)
+    if len(keep) > 2 and float(np.linalg.norm(keep[0] - keep[-1])) < tol:
+        keep.pop()
+    return np.asarray(keep, dtype=float)
 
 
 def _densify_ring(coords, max_seg):
@@ -558,7 +717,9 @@ def build_meshes(holes, fit, thickness, n_outer=168):
                 continue
             # Keep the Voronoi vertices. Adding collinear points here makes
             # earcut drop hole edges; refinement happens after the triangulate.
-            ring = _densify_ring(np.asarray(poly.exterior.coords), 1e9)
+            ring = _clean_ring(np.asarray(poly.exterior.coords))
+            if len(ring) < 3:
+                continue
             if _signed_area(ring) > 0:
                 ring = ring[::-1]
             if len(ring) >= 3:

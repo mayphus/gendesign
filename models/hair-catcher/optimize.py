@@ -38,12 +38,12 @@ def load_req(path: Path) -> dict:
     return json.loads(text)
 
 
-def _run_generative(req, out: Path, quick: bool):
+def _run_generative(req, out: Path, quick: bool, round_index: str):
     import gen_search
 
-    # Short on purpose. A longer search waits until the AI review of this round.
-    pop, gens = (8, 2) if quick else (10, 3)
-    return gen_search.run_round(req, out, pop=pop, gens=gens, seed=7)
+    # Round 01 is the repaired search. --quick stays a smoke test.
+    pop, gens = (8, 2) if quick else (24, 8)
+    return gen_search.run_round(req, out, pop=pop, gens=gens, seed=11, round_index=round_index)
 
 
 def _run_smooth(req, out: Path, quick: bool):
@@ -164,6 +164,7 @@ def main():
     ap.add_argument("--requirements", type=Path, default=HERE / "requirements.yaml")
     ap.add_argument("-o", "--out", type=Path, default=None)
     ap.add_argument("--quick", action="store_true", help="smaller population / fewer generations")
+    ap.add_argument("--round", default="01", help="iteration folder name, e.g. 01")
     ap.add_argument("--variant", default="C", help="voronoi variant A|B|C")
     args = ap.parse_args()
     req = load_req(args.requirements)
@@ -178,7 +179,7 @@ def main():
         dest.mkdir(parents=True, exist_ok=True)
         print("==>", m, "->", dest)
         if m == "generative":
-            _run_generative(req, dest, args.quick)
+            _run_generative(req, dest, args.quick, args.round)
         elif m == "smooth":
             _run_smooth(req, dest, args.quick)
         elif m == "deep":

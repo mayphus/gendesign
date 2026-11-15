@@ -5,9 +5,9 @@ bowl: hair and water fall through; a ball larger than **8.6 mm** does not.
 Earlier two-level Voronoi versions (A, B, C) are hair catchers, not toy
 guards. A deeper side-slot basket (v3) is included as an experiment.
 
-Round 00 of the generative search is in [iterations/00](designs/generative-v1/iterations/00/decisions.md). It is a short NSGA-II pass, not a finished grate. Top views of the four picks:
+Round 01 is the current search, after the film fill, the 0.5 mm deflection cap, the cell-gap penalty, and plan fillets. It is not a finished grate. Log: [iterations/01](designs/generative-v1/iterations/01/decisions.md). Round 00 is still in [iterations/00](designs/generative-v1/iterations/00/decisions.md).
 
-![Round 00 Pareto, top views](designs/generative-v1/iterations/00/pareto-sheet-top.png)
+![Round 01 Pareto, top views](designs/generative-v1/iterations/01/pareto-sheet.png)
 
 ![Smooth v2, 3/4 view](docs/preview-34.png)
 ![Smooth v2, top](docs/preview-top.png)
@@ -41,15 +41,15 @@ python models/hair-catcher/optimize.py --method smooth --quick
 python models/hair-catcher/optimize.py --method deep --quick
 ```
 
-Round 00, same orifice model for every row (Cd 0.61, 5 mm head). v2 volume is the published solid. Cone volumes include the deep skirt. Limits of the models are in the round log.
+Round 01, same orifice model for every row (Cd 0.61, 5 mm head). v2 volume is the published solid. Cone volumes include the deep skirt. The round 00 knee is the previous favorite. Limits of the models are in the round log.
 
-| Pick | Open | Max ball | Flow | Film area | Fingertip, 10 N | Volume |
-|---|---:|---:|---:|---:|---:|---:|
-| smooth v2 | 50.5% | 8.6 mm | 78 cm³/s | 0 | 0.04 mm | 4304 mm³ |
-| open-drain | 66.5% | 7.9 mm | 102 cm³/s | 0 | 0.36 mm | 3558 mm³ |
-| knee | 60.6% | 7.0 mm | 93 cm³/s | 0 | 0.11 mm | 3794 mm³ |
-| stiff | 48.3% | 8.1 mm | 69 cm³/s | 0 | 0.07 mm | 4020 mm³ |
-| hair-snag | 47.8% | 6.2 mm | 67 cm³/s | 12.6 mm² | 0.08 mm | 4029 mm³ |
+| Pick | Open | Max ball | Median | Flow | Film | Fingertip, 10 N | Volume |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| smooth v2 | 50.5% | 8.6 mm | 8.6 mm | 78 cm³/s | 0 | 0.04 mm | 4304 mm³ |
+| round 00 knee | 60.6% | 7.0 mm | — | 93 cm³/s | 0 | 0.11 mm | 3794 mm³ |
+| open-drain | 63.9% | 7.2 mm | 6.9 mm | 98 cm³/s | 0 | 0.34 mm | 3593 mm³ |
+| knee | 59.8% | 6.3 mm | 5.4 mm | 92 cm³/s | 0 | 0.49 mm | 3656 mm³ |
+| hair-snag | 46.7% | 5.3 mm | 4.8 mm | 69 cm³/s | 0 | 0.09 mm | 3988 mm³ |
 
 | Design | What it is | Docs |
 |---|---|---|

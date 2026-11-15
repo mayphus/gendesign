@@ -27,15 +27,18 @@ constraints:
   cone_angle_deg: 47.0                # from horizontal; 2° margin so facets stay under 45°
   film_gap_mm: 2.7                    # capillary length of water; smaller cells do not drain
   film_full_mm: 4.0                   # full orifice credit. Voronoi B used about 3.5 mm.
-  max_fingertip_disp_mm: 1.5
+  max_fingertip_disp_mm: 0.5          # constraint, not an objective. Round 00 review.
   fingertip_N: 10.0
   hard_push_N: 30.0
+  fillet_mm: 0.50                     # plan fillet on strut corners. v2 lips were 0.60.
 
 objectives:
   drainage: maximize film-weighted orifice flow at a fixed head
-  capture: maximize (ball limit minus the largest opening)
-  stiffness: maximize fingertip load over peak grillage deflection
+  capture: >
+    maximize (ball limit minus the largest opening), then subtract half
+    the gap between that opening and the median cell
   material: minimize solid volume; a print-time proxy follows the volume
+  stiffness: constraint only, fingertip deflection at or under 0.5 mm at 10 N
 
 reference_smooth_v2:
   max_ball_mm: 8.6

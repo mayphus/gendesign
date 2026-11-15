@@ -1,17 +1,17 @@
 {
   "name": "generative-v1",
   "method": "generative",
-  "round": "00",
+  "round": "01",
   "prefix": "basin-knee",
   "params": {
-    "n_seeds": 10.0,
-    "exponent": 0.41887712444540515,
-    "phase": 3.938048786172417,
-    "jitter": 0.027927472996519247,
-    "strut": 1.4887033684538573,
-    "flare": 0.23207858526112402,
-    "thickness": 2.289258862523515,
-    "harm": -0.09092954673847314
+    "n_seeds": 14.0,
+    "exponent": 0.41890702349828307,
+    "phase": 0.3436172609582352,
+    "jitter": 0.08439405795187148,
+    "strut": 1.3467031304450598,
+    "flare": 0.04501286301999516,
+    "thickness": 1.8163018961814146,
+    "harm": -0.10691412795799163
   },
   "fit": {
     "shrink": 0.003,
@@ -31,7 +31,9 @@
     "cone_deg": 47.0,
     "film_gap": 2.7,
     "film_full": 4.0,
-    "max_disp": 1.5,
+    "max_disp": 0.5,
+    "fillet_mm": 0.5,
+    "cell_gap_weight": 0.5,
     "finger_N": 10.0,
     "push_N": 30.0,
     "head_mm": 5.0,
@@ -46,6 +48,6 @@
     "v2_open_pct": 50.54,
     "v2_volume": 4304.4
   },
-  "title": "Round 00 knee. Not a final pick.",
-  "notes": "Short NSGA-II round. See iterations/00/decisions.md. The owner has not chosen a pick."
+  "title": "Round 01 knee. Not a final pick.",
+  "notes": "Owner called the round 00 knee the one to beat. This is the round 01 knee after the film fill, the 0.5 mm deflection cap, the cell-gap penalty, and plan fillets. See iterations/01/decisions.md."
 }
