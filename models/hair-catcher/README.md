@@ -10,7 +10,9 @@ The analysis derived the targets from [requirements.yaml](requirements.yaml) bef
 
 Round 01 knee is the candidate: 11 holes 5.2–6.3 mm, 424 mm² open, 81 cm³/s, hard-push stress 16.2 of 20 MPa, watertight, nothing over air. Round 02 checked the two open questions: corners are already rounder than the hair-hook and water-wedge radii (zero snag, zero corner water), and a cold search twice as large found nothing that beats this knee. Awaiting the owner's go; not printed.
 
-![Round 01 picks](designs/pebble-plate/iterations/01/picks.png)
+![How the hair catcher is generated](docs/how-it-is-generated.png)
+
+Redraw it for any pick with `python models/hair-catcher/docs/explain.py --round 01 --pick knee`.
 
 ## Commands
 
