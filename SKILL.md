@@ -11,14 +11,17 @@ Requirements are the input. AI + algorithms are the process. A model is the outp
 flowchart LR
     I[Requirements] --> P[AI + algorithms]
     P --> O[Model result]
-    O -. feedback: test, measure .-> P
+    O --> Y{Owner picks and says go}
+    Y --> T[Print and test]
+    T -- results correct the models --> P
+    T -. requirement was wrong .-> I
 ```
 
-A saved `design.json` rebuilds the geometry. `models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. Planned methods are in [ROADMAP.md](ROADMAP.md).
+A saved `design.json` rebuilds the geometry. `models/hair-catcher` and `models/drybox-adapter` are worked examples. Methods live in the `gendesign` package. The interfaces are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Planned methods are in [ROADMAP.md](ROADMAP.md).
 
 ## Loop
 
-Requirements, with units. Do not invent a fit-critical dimension. The process analyzes, generates, and checks printability. Save the result as `designs/<name>/design.json`. Print only after the owner's go. After a print, write `test.md`. That note is the next pass of the process, not a change to the requirements.
+Requirements, with units. Do not invent a fit-critical dimension. The process generates and evaluates. Save the result as `designs/<name>/design.json`. The owner picks and says go before a print. A `test.md` after a print corrects the evaluators. Only a wrong requirement goes back to `requirements.yaml`.
 
 ## Design rules
 

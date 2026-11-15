@@ -188,6 +188,25 @@ def evolution_gif(design_dir, out_path=None, duration_ms: int = 500, size=400):
     return out
 
 
+class IterationLog:
+    """The iteration folder for one design. Feedback notes land here too."""
+
+    def __init__(self, design_dir):
+        self.design_dir = Path(design_dir)
+
+    def write(self, **kwargs):
+        return write_iteration(self.design_dir, **kwargs)
+
+    def sheet(self, **kwargs):
+        return contact_sheet(self.design_dir, **kwargs)
+
+    def gif(self, **kwargs):
+        return evolution_gif(self.design_dir, **kwargs)
+
+    def chart(self, **kwargs):
+        return score_chart(self.design_dir, **kwargs)
+
+
 def score_chart(design_dir, out_path=None, score_key: str = "score", title: str | None = None):
     import matplotlib
     matplotlib.use("Agg")

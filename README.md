@@ -6,10 +6,13 @@ Requirements go in. AI + algorithms do the work. A model comes out. A test, a me
 flowchart LR
     I[Requirements] --> P[AI + algorithms]
     P --> O[Model result]
-    O -. feedback: test, measure .-> P
+    O --> Y{Owner picks and says go}
+    Y --> T[Print and test]
+    T -- results correct the models --> P
+    T -. requirement was wrong .-> I
 ```
 
-Requirements are the measured input: units, fit, and what the part has to do. The process is an AI agent reviewing and redirecting, and code that computes and searches. The output is a saved design and a mesh. The bench, a caliper reading, or a look at the renders changes the next pass of that process.
+Requirements are the measured input. The process is an AI agent plus the generators, evaluators, and search. The output is a design, a mesh, and the trade-offs. A test corrects the evaluators. A wrong requirement is the rare path back to the input. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 The `gendesign` package is the toolkit (topology optimization, lattices, search, smoothing, evaluation). The parts under `models/` are worked examples: a basin hair catcher and a drybox adapter. A saved `design.json` rebuilds the geometry.
 

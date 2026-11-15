@@ -230,11 +230,77 @@ def render_closeup(mesh, path, focus=(6.0, 2.5, -4.0)):
     p.close()
 
 
+class GrateGenerator:
+    """Round-02 knee layout. Strut, blend, and profile are free. They are not objectives."""
+
+    name = "voronoi-grate"
+
+    def __init__(self, seeds, fit):
+        self.seeds = seeds
+        self.fit = fit
+
+    def bounds(self):
+        return BOUNDS
+
+    def generate(self, x, requirements):
+        ev = evaluate_shape(x, self.seeds, self.fit, pitch=0.48)
+        info = ev["info"]
+        info["objectives"] = ev["objectives"]
+        info["params"] = {"strut": float(x[0]), "blend": float(x[1]), "profile": float(x[2])}
+        return {"params": info["params"], "info": info}
+
+
+class _Score(Evaluator):
+    def __init__(self, name, key, uncertainty, constraint=False):
+        self.name = name
+        self.key = key
+        self._uncertainty = uncertainty
+        self.constraint = constraint
+
+    def evaluate(self, design, requirements):
+        info = design["info"]
+        if self.constraint:
+            return {
+                "objectives": [],
+                "violation": info.get("violation") or 0.0,
+                "metrics": info,
+                "uncertainties": {self.name: self._uncertainty},
+            }
+        return {
+            "objectives": [info[self.key]],
+            "violation": 0.0,
+            "metrics": {"feasible": info.get("feasible", True), self.key: info[self.key],
+                        "blend": info.get("blend"), "profile": info.get("profile")},
+            "uncertainties": {self.name: self._uncertainty},
+        }
+
+
+def grate_evaluators():
+    return [
+        _Score("drainage", "flow_mm3_s", "Orifice model at a fixed head, minus corner water. Not a measured drain."),
+        _Score("capture", "capture_mm", "Largest opening versus the ball limit. Not a hair simulation."),
+        _Score("hair-release", "hair_release", "Corners tighter than 0.5 mm can hook a fiber. Proxy, not a pull test."),
+        _Score("stress", "stress_relief", "Plane-stress peak under an in-plane 10 N patch. Not plate bending."),
+        _Score("printability", "violation", "Openings under 4 mm or struts under 1.5 mm are infeasible.", constraint=True),
+    ]
+
+
 def run_round(req, out, pop=12, gens=4, seed=5):
-    from gendesign.search import nsga2
-    from gen_grate import build_meshes, fit_from_requirements, render_views
+    from gendesign.process import run as process_run
+    from gendesign.requirements import Requirements, validate_mapping
+    from gen_grate import fit_from_requirements, render_views
 
     out = Path(out)
+    errors = validate_mapping(req)
+    if errors:
+        raise SystemExit("requirements: " + "; ".join(errors))
+    requirements = Requirements(
+        name=str(req.get("name") or ""),
+        units=str(req.get("units") or ""),
+        purpose=str(req.get("purpose") or ""),
+        constraints=req.get("constraints") or {},
+        raw=req,
+    )
     fit = fit_from_requirements(req)
     params = json.loads(KNEE_PARAMS.read_text())
     seeds = np.asarray(params["seeds_xy"], float)
@@ -242,22 +308,18 @@ def run_round(req, out, pop=12, gens=4, seed=5):
     round_dir = out / "iterations" / "03"
     (round_dir / "generations").mkdir(parents=True, exist_ok=True)
 
-    def fun(x):
-        try:
-            ev = evaluate_shape(x, seeds, fit, pitch=0.48)
-        except Exception as exc:
-            return {"objectives": [-1e6, -1e6, -1e6, -1e6], "violation": 50.0, "info": {"error": str(exc), "feasible": False}}
-        ev["info"].pop("objectives", None)
-        ev["info"]["objectives"] = ev["objectives"]
-        return ev
-
-    print(f"round 03 functional models  pop={pop} gens={gens}", flush=True)
-    result = nsga2(fun, BOUNDS, pop=pop, gens=gens, seed=seed, x0=[
-        [1.57, 0.08, 0.0],
-        [1.57, 1.6, 1.0],
-        [1.70, 0.9, 0.6],
-        [1.90, 0.3, 0.2],
-    ])
+    print(f"round 03 via gendesign.process  pop={pop} gens={gens} seed={seed}", flush=True)
+    result = process_run(
+        GrateGenerator(seeds, fit),
+        grate_evaluators(),
+        requirements,
+        method="nsga2",
+        pop=pop,
+        gens=gens,
+        seed=seed,
+        x0=[[1.57, 0.08, 0.0], [1.57, 1.6, 1.0], [1.70, 0.9, 0.6], [1.90, 0.3, 0.2]],
+    )
+    result.save(round_dir / "result.json")
     feas = [t for t in result.trials if t.info.get("feasible")]
     front = [t for t in result.front if t.info.get("feasible")] or list(result.front)
 
