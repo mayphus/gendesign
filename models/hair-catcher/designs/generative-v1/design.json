@@ -1,17 +1,17 @@
 {
   "name": "generative-v1",
   "method": "generative",
-  "round": "01",
+  "round": "02",
   "prefix": "basin-knee",
   "params": {
-    "n_seeds": 14.0,
-    "exponent": 0.41890702349828307,
-    "phase": 0.3436172609582352,
-    "jitter": 0.08439405795187148,
-    "strut": 1.3467031304450598,
-    "flare": 0.04501286301999516,
-    "thickness": 1.8163018961814146,
-    "harm": -0.10691412795799163
+    "n_seeds": 11.0,
+    "exponent": 0.4094650266302148,
+    "phase": 2.5527433567673747,
+    "jitter": 0.4468870563439761,
+    "strut": 1.5734104816794745,
+    "flare": 0.047837587609759286,
+    "thickness": 2.289258862523515,
+    "harm": 0.06046113038016008
   },
   "fit": {
     "shrink": 0.003,
@@ -26,11 +26,12 @@
     "collar_engagement": 10.2,
     "max_insert": 18.0,
     "max_ball": 12.0,
-    "min_strut": 1.25,
+    "min_strut": 1.5,
     "rim": 1.35,
     "cone_deg": 47.0,
     "film_gap": 2.7,
     "film_full": 4.0,
+    "opening_floor": 4.0,
     "max_disp": 0.5,
     "fillet_mm": 0.5,
     "cell_gap_weight": 0.5,
@@ -48,6 +49,6 @@
     "v2_open_pct": 50.54,
     "v2_volume": 4304.4
   },
-  "title": "Round 01 knee. Not a final pick.",
-  "notes": "Owner called the round 00 knee the one to beat. This is the round 01 knee after the film fill, the 0.5 mm deflection cap, the cell-gap penalty, and plan fillets. See iterations/01/decisions.md."
+  "title": "Round 02 knee. Closest candidate, not cleared to print.",
+  "notes": "Center-open grade, 1.5 mm strut floor, 4 mm opening floor, two objectives. See iterations/02/decisions.md. Flange diameter and bore depth are still unmeasured."
 }

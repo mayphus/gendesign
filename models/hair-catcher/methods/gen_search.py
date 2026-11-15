@@ -32,13 +32,10 @@ def _knee(front):
     pool = feas or list(front)
     if not pool:
         return None
-    keys = ("flow_mm3_s", "capture_mm", "volume_mm3")
+    keys = ("flow_mm3_s", "capture_mm")
     cols = []
     for k in keys:
         col = np.array([float(t.info.get(k, 0.0) or 0.0) for t in pool], dtype=float)
-        # Volume is minimized; flip it so 1 is best.
-        if k == "volume_mm3":
-            col = -col
         lo, hi = float(np.min(col)), float(np.max(col))
         cols.append((col - lo) / (hi - lo) if hi - lo > 1e-9 else np.ones_like(col))
     norm = np.vstack(cols).T
@@ -69,18 +66,10 @@ def _unique_picks(front):
         picks.append({"name": name, "trial": t})
 
     take("open-drain", max(feas, key=lambda t: metric(t, "flow_mm3_s")))
-    drainers = [t for t in feas if metric(t, "flow_mm3_s") >= 0.45 * best_flow] or feas
+    drainers = [t for t in feas if metric(t, "flow_mm3_s") >= 0.55 * best_flow] or feas
     take("hair-snag", max(drainers, key=lambda t: metric(t, "capture_mm")))
-    # Stiffness is a constraint. The third axis of the front is volume.
-    take("light", min(drainers, key=lambda t: metric(t, "volume_mm3")))
     take("knee", _knee(feas))
-    # Fill with the next-most-crowded distinct points if the front collapsed.
-    ranked = sorted(feas, key=lambda t: metric(t, "flow_mm3_s"), reverse=True)
-    for t in ranked:
-        if len(picks) >= 4:
-            break
-        take(f"alt-{len(picks)}", t)
-    return picks[:4]
+    return picks[:3]
 
 
 def _caption(info):
@@ -160,11 +149,11 @@ def run_round(req: dict, out: Path, *, pop=10, gens=3, seed=7, pitch=0.18, round
         )
 
     x0 = [
-        # Round 00 knee, plus a rim-finer and a center-finer neighbour.
-        [10, 0.419, 3.938, 0.028, 1.489, 0.232, 2.29, -0.091],
-        [12, 0.50, 0.6, 0.08, 1.55, 0.10, 2.2, 0.0],
-        [11, 0.36, 1.2, 0.05, 1.45, 0.05, 2.1, 0.0],
-        [14, 0.66, 2.0, 0.10, 1.60, 0.25, 2.3, 0.08],
+        # Center-open grades, strut at or above 1.5 mm. Strength of the grade varies.
+        [8, 0.36, 0.4, 0.05, 1.60, 0.12, 2.15, 0.0],
+        [7, 0.32, 1.4, 0.04, 1.55, 0.08, 2.05, 0.02],
+        [10, 0.44, 2.2, 0.08, 1.75, 0.20, 2.25, -0.04],
+        [9, 0.38, 3.6, 0.06, 1.65, 0.18, 2.10, 0.05],
     ]
 
     print(f"generative round {round_index}  pop={pop} gens={gens} seed={seed}", flush=True)

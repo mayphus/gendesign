@@ -37,9 +37,10 @@ class GrateTests(unittest.TestCase):
         # 12 through-holes -> euler 2 - 2*holes. Allow the placed count.
         self.assertEqual(use.euler_number, 2 - 2 * info["n_openings"])
         self.assertLessEqual(info["film_area_mm2"], 3.0)
-        self.assertEqual(len(info["objectives"]), 3)
-        self.assertLessEqual(info["min_ball_mm"], info["max_ball_mm"])
-        self.assertGreater(info["min_ball_mm"], 2.0)
+        self.assertEqual(len(info["objectives"]), 2)
+        self.assertGreaterEqual(design["strut"], 1.50)
+        self.assertLessEqual(design["exponent"], 0.46)
+        self.assertGreater(info["min_ball_mm"], 3.3)
 
     def test_film_crack_is_filled_and_corners_round(self):
         fit = fit_from_requirements({})
@@ -48,8 +49,8 @@ class GrateTests(unittest.TestCase):
         holes = round_openings([big, crack], fit, quad_segs=4)
         self.assertEqual(len(holes), 1)
         self.assertGreater(holes[0].area, 20.0)
-        self.assertFalse(holes[0].buffer(-fit["film_gap"] / 2.0).is_empty)
-        sharp = Polygon([(-4.0, -2.5), (5.0, -2.2), (-0.5, 4.8)])
+        self.assertFalse(holes[0].buffer(-fit["opening_floor"] / 2.0).is_empty)
+        sharp = Polygon([(-6.0, -4.0), (7.0, -3.5), (0.0, 7.0)])
         rounded = round_openings([sharp], fit, quad_segs=4)
         self.assertEqual(len(rounded), 1)
         self.assertGreater(len(rounded[0].exterior.coords), 8)

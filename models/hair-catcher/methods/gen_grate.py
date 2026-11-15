@@ -30,16 +30,16 @@ GENE_NAMES = (
     "harm",
 )
 
-# (name, lo, hi). n_seeds is rounded. exponent 0.5 is uniform in area.
+# exponent stays below 0.5 so center cells are larger than rim cells.
 BOUNDS = (
-    (8.0, 16.0),
-    (0.34, 0.78),
+    (6.0, 12.0),
+    (0.30, 0.46),
     (0.0, 2.0 * math.pi),
-    (0.0, 0.55),
-    (1.30, 2.20),
-    (0.0, 0.50),
+    (0.0, 0.45),
+    (1.50, 2.20),
+    (0.0, 0.45),
     (1.80, 2.80),
-    (-0.22, 0.22),
+    (-0.18, 0.18),
 )
 
 
@@ -67,12 +67,14 @@ def fit_from_requirements(req: dict) -> dict:
         "collar_engagement": float(fit.get("collar_engagement_mm", 10.2)),
         "max_insert": float(rules.get("max_insert_mm", 18.0)),
         "max_ball": float(rules.get("max_ball_mm", 12.0)),
-        "min_strut": float(rules.get("min_strut_mm", 1.25)),
+        "min_strut": float(rules.get("min_strut_mm", 1.50)),
         "rim": float(rules.get("min_rim_mm", 1.35)),
         # 47° from horizontal leaves the faceted mesh under a 45° overhang.
         "cone_deg": float(rules.get("cone_angle_deg", 47.0)),
         "film_gap": float(rules.get("film_gap_mm", 2.7)),
         "film_full": float(rules.get("film_full_mm", 4.0)),
+        # Geometric floor. At 4 mm every kept cell is past the partial-flow ramp.
+        "opening_floor": float(rules.get("opening_floor_mm", rules.get("film_full_mm", 4.0))),
         "max_disp": float(rules.get("max_fingertip_disp_mm", 0.5)),
         "fillet_mm": float(rules.get("fillet_mm", phys.get("fillet_mm", 0.50))),
         "cell_gap_weight": float(phys.get("cell_gap_weight", 0.5)),
@@ -95,8 +97,10 @@ def fit_from_requirements(req: dict) -> dict:
 def decode(x, fit) -> dict:
     x = np.asarray(x, dtype=float).ravel()
     d = {name: float(np.clip(x[i], BOUNDS[i][0], BOUNDS[i][1])) for i, name in enumerate(GENE_NAMES)}
-    d["n_seeds"] = float(np.clip(int(round(d["n_seeds"])), 6, 18))
+    d["n_seeds"] = float(np.clip(int(round(d["n_seeds"])), 6, 12))
     d["strut"] = max(d["strut"], fit["min_strut"])
+    # Stay on the center-open side of a uniform layout. 0.46 is a mild grade.
+    d["exponent"] = float(min(d["exponent"], 0.46))
     # The cone depth plus the wall has to stay inside the measured bore.
     slope = math.tan(math.radians(fit["cone_deg"]))
     t_cap = fit["max_insert"] - fit["r_in"] * slope + fit["flange_t"] - 0.15
@@ -124,7 +128,7 @@ def print_height(fit, thickness) -> float:
 
 
 def _density_weight(xy, d, R):
-    """Seed density. exponent 0.5 is uniform area; higher packs the center."""
+    """Seed density. exponent below 0.5 puts more seeds, and smaller cells, at the rim."""
     r = np.hypot(xy[..., 0], xy[..., 1])
     th = np.arctan2(xy[..., 1], xy[..., 0])
     rn = np.clip(r / max(R, 1e-6), 0.0, 1.0)
@@ -133,31 +137,47 @@ def _density_weight(xy, d, R):
     return np.clip(radial * angular, 0.15, None)
 
 
-def place_seeds(d, fit) -> np.ndarray:
-    """Graded spiral, then density-weighted Lloyd so cell size follows the field.
+def _grade_strength(d) -> float:
+    """0 is a mild center-open grade, 1 is a strong one. Exponent stays <= 0.46."""
+    return float(np.clip((0.46 - float(d["exponent"])) / 0.16, 0.0, 1.25))
 
-    The exponent is the radial grade: above 0.5 the center is finer, below
-    0.5 the rim is finer. Lloyd stops the last ring from leaving one huge cell.
+
+def place_seeds(d, fit) -> np.ndarray:
+    """One seed stays at the origin. The others pack tighter toward the rim.
+
+    The drain is under the center, so that cell is the large one. Hair
+    settles near the rim, so those cells are smaller. The exponent only
+    changes how strong that grade is. The center seed is not allowed to move.
     """
     n = int(d["n_seeds"])
+    strength = _grade_strength(d)
     golden = math.pi * (3.0 - math.sqrt(5.0))
     R = fit["r_in"] - fit["rim"] - 0.3
-    pts = []
-    for i in range(n):
-        u = (i + 0.5) / n
-        r = R * (u ** d["exponent"])
+    rim_pitch = d["strut"] + 0.78 * fit["opening_floor"]
+
+    def local_sep(p):
+        rn = float(np.hypot(p[0], p[1])) / max(R, 1e-6)
+        return rim_pitch * (1.0 + 1.25 * strength * (1.0 - min(rn, 1.0)))
+
+    seeds = [np.zeros(2)]
+    for i in range(n * 12):
+        if len(seeds) >= n:
+            break
+        u = (i + 0.5) / (n * 12)
+        # Candidates lean outward. A stronger grade pushes them further out.
+        r = R * (u ** (0.62 + 0.45 * strength))
         th = d["phase"] + i * golden
-        r *= 1.0 + d["harm"] * math.cos(3.0 * th)
         th = th + d["jitter"] * 0.35 * math.sin(1.7 * i + d["phase"])
-        r = float(np.clip(r, 0.0, R))
-        pts.append((r * math.cos(th), r * math.sin(th)))
-    min_sep = d["strut"] + 0.85 * fit["film_gap"]
-    seeds = _separate(np.asarray(pts, dtype=float), min_sep, R)
-    return _lloyd(seeds, d, R, min_sep)
+        r *= 1.0 + 0.5 * d["harm"] * math.cos(3.0 * th)
+        r = float(np.clip(r, rim_pitch * 0.85, R))
+        p = np.array([r * math.cos(th), r * math.sin(th)])
+        if all(float(np.hypot(*(p - q))) >= 0.92 * min(local_sep(p), local_sep(q)) for q in seeds):
+            seeds.append(p)
+    return _lloyd_center(np.asarray(seeds, float), d, R, strength)
 
 
-def _lloyd(seeds, d, R, min_sep, steps=5):
-    """Move each seed to the density-weighted centroid of its cell."""
+def _lloyd_center(seeds, d, R, strength, steps=4):
+    """Relax every seed except the one pinned at the origin."""
     seeds = np.asarray(seeds, dtype=float)
     if len(seeds) < 2:
         return seeds
@@ -166,12 +186,14 @@ def _lloyd(seeds, d, R, min_sep, steps=5):
     rad = R * np.sqrt(u)
     ang = np.arange(m) * math.pi * (3.0 - math.sqrt(5.0))
     samples = np.stack([rad * np.cos(ang), rad * np.sin(ang)], axis=1)
-    weight = _density_weight(samples, d, R)
+    rn = np.clip(np.hypot(samples[:, 0], samples[:, 1]) / max(R, 1e-6), 0.0, 1.0)
+    weight = (rn + 0.12) ** (1.0 + strength)
     for _ in range(steps):
         delta = samples[:, None, :] - seeds[None, :, :]
         assign = np.einsum("ijk,ijk->ij", delta, delta).argmin(axis=1)
         new = seeds.copy()
-        for i in range(len(seeds)):
+        new[0] = 0.0
+        for i in range(1, len(seeds)):
             mask = assign == i
             if int(mask.sum()) < 3:
                 continue
@@ -180,9 +202,10 @@ def _lloyd(seeds, d, R, min_sep, steps=5):
             new[i, 1] = np.average(samples[mask, 1], weights=w)
         rad_s = np.hypot(new[:, 0], new[:, 1])
         over = rad_s > R
-        new[over] *= (R / rad_s[over])[:, None]
+        new[over] *= (R / np.maximum(rad_s[over], 1e-6))[:, None]
+        new[0] = 0.0
         seeds = new
-    return _separate(seeds, min_sep * 0.92, R)
+    return seeds
 
 
 def _separate(seeds, min_sep, R):
@@ -281,7 +304,7 @@ def round_openings(holes, fit, quad_segs=4):
 
     R = fit["r_in"] - fit["rim"]
     inner = Point(0.0, 0.0).buffer(R, quad_segs=12)
-    holes = _drains(holes, fit["film_gap"])
+    holes = _drains(holes, fit["opening_floor"])
     if not holes:
         return []
     void = unary_union(holes).intersection(inner)
@@ -292,7 +315,7 @@ def round_openings(holes, fit, quad_segs=4):
         solid = solid.buffer(-radius, join_style=1, quad_segs=quad_segs)
         solid = solid.intersection(inner)
     void2 = inner.difference(solid)
-    return _drains(_pieces(void2), fit["film_gap"])
+    return _drains(_pieces(void2), fit["opening_floor"])
 
 
 def _drop_specks(void, pitch, min_area_mm2=1.5):
@@ -438,6 +461,41 @@ def ridge_graph(seeds, d, fit):
     return nodes_a, edges, widths, fixed
 
 
+def _inscribed_diameter(poly) -> float:
+    lo, hi = 0.0, 14.0
+    for _ in range(14):
+        mid = 0.5 * (lo + hi)
+        if poly.buffer(-mid).is_empty:
+            hi = mid
+        else:
+            lo = mid
+    return 2.0 * lo
+
+
+def _rogue_rim_gap(holes) -> float:
+    """How far a non-center opening exceeds the opening over the drain.
+
+    Zero when the center cell is the largest, which is the intended grade.
+    """
+    from shapely.geometry import Point
+
+    if not holes:
+        return 0.0
+    origin = Point(0.0, 0.0)
+    center = None
+    others = []
+    for h in holes:
+        if center is None and (h.covers(origin) or h.contains(origin)):
+            center = h
+        else:
+            others.append(h)
+    if center is None or not others:
+        return 0.0
+    center_d = _inscribed_diameter(center)
+    rim_d = max(_inscribed_diameter(h) for h in others)
+    return max(0.0, rim_d - center_d)
+
+
 def collar_flange_volume(fit) -> float:
     r_in, r_loc, r_fl = fit["r_in"], fit["r_loc"], fit["r_flange"]
     zt = fit["flange_t"]
@@ -488,9 +546,12 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
     violation = 0.0
     if flow["max_ball_mm"] > fit["max_ball"]:
         violation += flow["max_ball_mm"] - fit["max_ball"]
-    if flow["n_openings"] < 1 or flow["max_ball_mm"] < fit["film_gap"]:
-        # No opening large enough to break a water film.
-        violation += fit["film_gap"] - flow["max_ball_mm"] + 0.5
+    floor = fit["opening_floor"]
+    if flow["n_openings"] < 1 or flow["max_ball_mm"] < floor:
+        violation += floor - flow["max_ball_mm"] + 0.5
+    # Raster inscribed diameters under-read a true circle by a fraction of a pixel.
+    if flow["n_openings"] > 0 and flow["min_ball_mm"] < floor - 0.55:
+        violation += floor - flow["min_ball_mm"]
     # Openings under the film gap are filled before this score. A remaining
     # film area means the fill missed a crack; that design is not a pick.
     if flow["film_area_mm2"] > 3.0:
@@ -504,14 +565,19 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
     if d["strut"] < fit["min_strut"] - 1e-6:
         violation += fit["min_strut"] - d["strut"]
 
-    # Capture is how far the largest ball sits under the limit. The gap
-    # between that ball and the median cell is a penalty, so one rim cell
-    # cannot set the score while the center is a different grate.
+    # The center cell is supposed to be the largest. A rim cell that beats
+    # it is the round-00 failure, and it costs capture. A smooth grade does not.
+    rogue = _rogue_rim_gap(holes)
+    from shapely.geometry import Point
+    origin = Point(0.0, 0.0)
+    center_open = any(h.covers(origin) or h.contains(origin) for h in holes)
+    if not center_open:
+        violation += 2.0
     capture_raw = fit["max_ball"] - flow["max_ball_mm"]
-    capture = capture_raw - float(fit.get("cell_gap_weight", 0.5)) * cell_gap
+    capture = capture_raw - float(fit.get("cell_gap_weight", 0.5)) * rogue
     k = float(stiff["stiffness_N_per_mm"]) if stiff["connected"] and math.isfinite(stiff["max_disp_mm"]) else 0.0
-    # Stiffness is a constraint (see violation), not an objective.
-    objectives = [float(flow["flow_mm3_s"]), float(capture), float(-volume)]
+    # Stiffness and the strut floor are constraints. Volume is reported, not searched.
+    objectives = [float(flow["flow_mm3_s"]), float(capture)]
     info = {
         "flow_mm3_s": flow["flow_mm3_s"],
         "flow_cm3_s": flow["flow_cm3_s"],
@@ -519,6 +585,7 @@ def evaluate_design(d, fit, seeds=None, pitch=0.16, with_mesh=False) -> dict:
         "capture_raw_mm": capture_raw,
         "median_ball_mm": median_ball,
         "cell_gap_mm": cell_gap,
+        "rogue_rim_mm": rogue,
         "stiffness_N_per_mm": k,
         "volume_mm3": volume,
         "grate_volume_mm3": grate_vol,
@@ -569,7 +636,7 @@ def evaluate_vector(x, fit, pitch=0.16) -> dict:
     try:
         ev = evaluate_design(d, fit, pitch=pitch)
     except Exception as exc:
-        return {"objectives": [-1e6, -1e6, -1e9], "violation": 100.0, "info": {"error": str(exc), "feasible": False}}
+        return {"objectives": [-1e6, -1e6], "violation": 100.0, "info": {"error": str(exc), "feasible": False}}
     return {"objectives": ev["objectives"], "violation": ev["violation"], "info": ev["info"]}
 
 

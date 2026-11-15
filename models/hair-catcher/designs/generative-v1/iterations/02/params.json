@@ -1,0 +1,50 @@
+{
+  "round": "02",
+  "pop": 28,
+  "gens": 10,
+  "seed": 11,
+  "bounds": {
+    "n_seeds": [
+      6.0,
+      12.0
+    ],
+    "exponent": [
+      0.3,
+      0.46
+    ],
+    "phase": [
+      0.0,
+      6.283185307179586
+    ],
+    "jitter": [
+      0.0,
+      0.45
+    ],
+    "strut": [
+      1.5,
+      2.2
+    ],
+    "flare": [
+      0.0,
+      0.45
+    ],
+    "thickness": [
+      1.8,
+      2.8
+    ],
+    "harm": [
+      -0.18,
+      0.18
+    ]
+  },
+  "genes": [
+    "n_seeds",
+    "exponent",
+    "phase",
+    "jitter",
+    "strut",
+    "flare",
+    "thickness",
+    "harm"
+  ]
+}

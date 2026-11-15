@@ -19,14 +19,15 @@ fit:
 
 constraints:
   max_ball_mm: 12.0                   # hard cap; anything larger must not pass
-  min_strut_mm: 1.25                  # search floor; 1.2 mm is the print floor
+  min_strut_mm: 1.50                  # round 02 floor, so the knee is not the deflection line
   min_rim_mm: 1.35
   max_insert_mm: 18.0
   max_proud_mm: 2.5
   max_overhang_deg: 45.0              # flange on the bed, no supports
   cone_angle_deg: 47.0                # from horizontal; 2° margin so facets stay under 45°
   film_gap_mm: 2.7                    # capillary length of water; smaller cells do not drain
-  film_full_mm: 4.0                   # full orifice credit. Voronoi B used about 3.5 mm.
+  film_full_mm: 4.0                   # full orifice credit
+  opening_floor_mm: 4.0               # round 02: every kept cell is a full drain
   max_fingertip_disp_mm: 0.5          # constraint, not an objective. Round 00 review.
   fingertip_N: 10.0
   hard_push_N: 30.0
@@ -37,8 +38,9 @@ objectives:
   capture: >
     maximize (ball limit minus the largest opening), then subtract half
     the gap between that opening and the median cell
-  material: minimize solid volume; a print-time proxy follows the volume
+  volume: reported only, not searched
   stiffness: constraint only, fingertip deflection at or under 0.5 mm at 10 N
+  grade: cells larger at the center, finer at the rim; the search sets the strength
 
 reference_smooth_v2:
   max_ball_mm: 8.6
