@@ -49,6 +49,8 @@ Open questions for the owner:
 
 ![round 00 picks](designs/pebble-plate/iterations/00/picks.png)
 
+<img src="designs/pebble-plate/iterations/00/picks/knee/preview-3d.png" width="520" alt="round 00 knee, 3-D">
+
 | Pick | drainage_cm3_s | capture_mm |
 |---|---:|---:|
 | knee | 78.9 | 5.74 |
@@ -93,6 +95,8 @@ Pending. Only the owner records this: `gendesign approve <this folder> <pick>`. 
 
 ![round 01 picks](designs/pebble-plate/iterations/01/picks.png)
 
+<img src="designs/pebble-plate/iterations/01/picks/knee/preview-3d.png" width="520" alt="round 01 knee, 3-D">
+
 | Pick | drainage_cm3_s | capture_mm |
 |---|---:|---:|
 | knee | 81 | 5.48 |
@@ -136,6 +140,8 @@ Pending. Only the owner records this: `gendesign approve <this folder> <pick>`. 
 2026-11-14 · nsga2 pop 24 × 8 gens, seed 23 · front 4 · [decisions](designs/pebble-plate/iterations/02/decisions.md)
 
 ![round 02 picks](designs/pebble-plate/iterations/02/picks.png)
+
+<img src="designs/pebble-plate/iterations/02/picks/knee/preview-3d.png" width="520" alt="round 02 knee, 3-D">
 
 | Pick | drainage_cm3_s | capture_mm |
 |---|---:|---:|

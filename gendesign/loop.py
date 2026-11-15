@@ -208,6 +208,7 @@ def run_round(model_dir, *, design=None, pop=12, gens=4, seed=0, picks=3, export
         (pd / "stats.json").write_text(json.dumps({"metrics": metrics, "mesh": _jsonable(report)}, indent=2))
         if hasattr(model, "preview"):
             model.preview(d, pd / "preview.png")
+        _preview_3d(pd, f"{model_dir.name} {design_dir.name} round {index}: {pname}")
         rows.append((pname, params, metrics, report))
 
     record = {
@@ -232,6 +233,19 @@ def run_round(model_dir, *, design=None, pop=12, gens=4, seed=0, picks=3, export
     _picks_png(it, rows, names, it / "picks.png")
     (it / "decisions.md").write_text(_decisions_template(record, rows, names, note))
     return it
+
+
+def _preview_3d(folder, title):
+    """Top, 3/4, underside and section views of folder/installed.stl, if PyVista is there."""
+    stl = Path(folder) / "installed.stl"
+    if not stl.exists():
+        return None
+    try:
+        from .render import preview_sheet
+
+        return preview_sheet(stl, Path(folder) / "preview-3d.png", title=title)
+    except ImportError:
+        return None
 
 
 def _seed_from(path, gen=None):
@@ -522,6 +536,7 @@ def generate(model_dir, source, out_dir=None):
     rep = model.export(d, out) if hasattr(model, "export") else {}
     if hasattr(model, "preview"):
         model.preview(d, out / "preview.png")
+    _preview_3d(out, f"{model_dir.name}: {src.parent.name}")
     report = {"source": str(src), "params": _jsonable(d.get("params")), "mesh": _jsonable(rep),
               "mesh_problems": mesh_problems(rep or {}), "genes_outside_bounds": outside}
     (out / "generate.json").write_text(json.dumps(report, indent=2))
@@ -583,6 +598,9 @@ def report(model_dir):
                   f"seed {rec['config']['seed']} · front {len(rec['front'])} · [decisions]({rel}/decisions.md)", ""]
             if (it / "picks.png").exists():
                 L += [f"![round {r['round']} picks]({rel}/picks.png)", ""]
+            knee3d = it / "picks" / "knee" / "preview-3d.png"
+            if knee3d.exists():
+                L += [f'<img src="{rel}/picks/knee/preview-3d.png" width="520" alt="round {r["round"]} knee, 3-D">', ""]
             names = rec.get("objectives") or []
             if rec.get("picks"):
                 L += ["| Pick | " + " | ".join(names) + " |", "|---|" + "---:|" * len(names)]
